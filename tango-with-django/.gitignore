@@ -1,0 +1,17 @@
+.installed.cfg
+bin
+develop-eggs
+dist
+downloads
+eggs
+parts
+src/*.egg-info
+lib
+lib64
+`config/api_keys.py`
+`*.pyc`
+**/*.pyc
+**/migrations/
+**/__pycache__
+.DS_STORE
+**/db.sqlite3
