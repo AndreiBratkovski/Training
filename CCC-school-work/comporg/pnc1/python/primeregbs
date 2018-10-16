@@ -1,0 +1,7 @@
+#!/bin/bash
+##
+## Wrapper for nodejs script
+##
+python ${0}.py ${*}
+
+exit 0

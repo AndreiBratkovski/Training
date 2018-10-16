@@ -1,0 +1,6 @@
+#!/bin/bash
+##
+## Wrapper for nodejs script
+##
+ nodejs ${0}.js ${*}
+exit 0

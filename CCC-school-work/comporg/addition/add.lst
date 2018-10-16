@@ -1,0 +1,27 @@
+     1                                  ; sample program doing some adding
+     2                                  ; hello world in 64-bit intel assembly
+     3                                  
+     4                                  section .data ; declares data section
+     5                                  
+     6                                  ; program part - code
+     7                                  section .text
+     8                                  	global _start
+     9                                  
+    10                                  _start:
+    11 00000000 B825000000              	mov rax, 37 ; eax (32-bit), ax (lower 16-bits), al ( lower 8-bits)
+    12 00000005 BB1A000000              	mov rbx, 26
+    13 0000000A 4801D8                  	add rax, rbx
+    14 0000000D 4889C1                  	mov rcx, rax
+    15 00000010 4883C30C                	add rbx, 12
+    16 00000014 41BCFF070000            	mov r12, 2047
+    17 0000001A 41BDFFFF0300            	mov r13, 262143
+    18 00000020 4D01EC                  	add r12, r13
+    19 00000023 41BB00000000            	mov r11, 0
+    20 00000029 BA00000000              	mov rdx, 0
+    21 0000002E 4C01DA                  	add rdx, r11
+    22                                  
+    23                                  ; return 0
+    24 00000031 B83C000000              	mov rax, 60
+    25 00000036 BF00000000              	mov rdi, 0
+    26 0000003B 0F05                    	syscall
+    27                                  

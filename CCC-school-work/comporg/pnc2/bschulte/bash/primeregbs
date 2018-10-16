@@ -1,0 +1,52 @@
+#!/bin/bash
+##
+##Prime number calc with break and square root
+##########
+
+if [ -z "$1" ]
+then
+	>&2 echo "No UpperBound Given"
+	exit 0
+elif [ "$1" -le 1 ]
+then
+	>&2 echo "Upperbound must be Greater than 1"
+	exit 0
+else
+	upBound=$1
+fi
+
+divBy=2
+i=3
+num=2
+
+start_time="$(date -u +%s.%N)"
+
+printf "2 3 " 1>&2 #prints to stderr
+
+while [ $num -ne $upBound ]
+do
+	sqt=$(bc <<< "scale=0; sqrt($1)")
+	mod=$(($i%$divBy))
+	
+	if [ $mod -ne 0 ]
+	then
+		if [ $divBy -ne $sqt ]
+		then
+			divBy=$(($divBy+1))
+		elif [ $divBy -eq $sqt ]
+		then
+			printf "%d " "$i" 1>&2
+			i=$(($i+1))
+			num=$(($num+1))
+			divBy=2			
+		fi
+	else
+		i=$(($i+1))
+		divBy=2
+	fi		
+done
+
+end_time="$(date -u +%s.%N)"
+
+elapsed=$(bc <<< "$end_time-$start_time")
+printf "%8.4f\n" "$elapsed"

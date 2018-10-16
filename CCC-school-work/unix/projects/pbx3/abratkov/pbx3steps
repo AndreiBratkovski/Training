@@ -1,0 +1,59 @@
+# Andrei Bratkovski pbx3 attempt
+# 10/11/17
+
+# Go to public directory and copy project files over to home directory
+
+cd /var/public/fall2017/unix/
+cd pbx3
+cp MANIFEST ~/src/unix/projects/
+cd abratkov
+cp pbx3.cpp ~/src/unix/projects/
+
+cd ~/src/unix/projects/
+mkdir pbx3
+mv pbx3.cpp pbx3
+mv MANIFEST pbx3
+cd pbx3
+
+# rename and unzip pbx3.cpp
+
+mv pbx3.cpp pbx3.tz
+tar -xvf pbx3.tz
+
+#
+# decode datapart1
+#
+uudecode datapart1
+
+#
+# rename datapart2 and unzip it
+#
+mv datapart2 datapart2.gz
+gunzip datapart2.gz
+
+#
+# paste together datapart1 and 2 for the top
+#
+paste -d '\0' datapart1 datapart2 >> Top
+
+
+#
+# rename datapart3 and unzip it
+#
+mv datapart3 datapart3.gz
+gunzip datapart3.gz
+
+#
+# extract datapart4
+#
+tar -xvf datapart4
+
+#
+# paste together part3 and 4 for Bottom
+#
+paste -d '\0' datapart3 part4 >> Bottom
+
+#
+# concatenate Top and Bottom for results
+#
+cat Top Bottom > pbx3.results

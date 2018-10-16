@@ -1,0 +1,1 @@
+zero | plus `four` | plus `four` | multby $(zero | minus `one`)

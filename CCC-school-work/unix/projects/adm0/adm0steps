@@ -1,0 +1,23 @@
+file filename #to check file types before using unix commands on them.
+
+unzip filename #to unzip 7zip or .zip files
+
+tar -xvzf filename #to unzip tar.gz files
+
+tar --xz -xvf filename.tar.xz #to unzip tar.xz files
+
+mv filename filename #to change filenames
+
+cat filename #to look at text file contents
+
+ls -l #to see the size of files in the directory
+
+tar xf filename.bz2 #to unzip bz2 tar files
+
+tar -cf to create a new tar file
+
+gzip to zip up the tar file created
+
+rev > filename newfilename #used to reverse the text of a file
+
+

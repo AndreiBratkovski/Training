@@ -1,0 +1,62 @@
+Andrei Bratkovski
+UNIX/Linux fundamentals PBX0
+
+#
+# Created copy of project file in ~/src/unix/projects/pbx0
+#
+
+cp -R abratkov ~/src/unix/projects/pbx0
+cat start.html
+file start.html
+mv start.html start.gz
+gunzip start.gz
+file start
+
+# now uuencoded ASCII file
+
+uudecode start
+ls
+file not.in.norway
+
+# bzip2 file
+
+bzip2 -dk not.in.norway
+file not.in.norway
+
+# now POSIX tar
+
+tar xvf not.in.norway
+file canyon.mid
+file sol.exe
+file subnet.pka
+
+uudecode subnet.pka
+unzip data.file.1
+cpio -idv < sol.exe
+
+file data.file.0
+file data.file.1
+file data.file.2
+
+chmod 755 data.file.0
+cat data.file.1
+cat data.file.2
+cat data.file.0
+
+rev data.file.1 > data.file.10
+rev data.file.2 > data.file.20
+
+sed -i -e 's/Z/ /g' data.file.20
+
+# change all Z's with spaces ^
+
+cat data.file.10 data.file.20 data.file.0 > results
+mv results results1
+sort -n results1 > results
+
+cat results
+md5sum results
+
+# its the same! I solved it woo!!! Fun exercise
+
+

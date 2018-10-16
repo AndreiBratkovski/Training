@@ -1,0 +1,69 @@
+PuzzleBox (pbx1)
+================
+Once again, your skills are put to the test; you are given a data file
+that contains a scrambled ASCII art image that you must unravel and 
+re-assemble, using only non-interactive command-line tools (no text
+editors! no assistive scripts you didn't write!)
+
+The final "image" can be identified by a top and bottom row of the 
+uppercase and lowercase vowels of the alphabet. Top row will be the
+uppercase vowels, bottom row the lowercase.
+
+The left and right-most columns contain a sequential line count, 
+ranging from 000 to 031 in octal.
+
+The flow of data is counter-clockwise: it will increment top to
+bottom along the left margin, increment left to right along the
+bottom margin, increment bottom to top along the right margin, and
+then increment right to left along the top margin.
+
+Use your experiences from the projects you've worked on, the various
+experimentation you've done in your own time, referencing the manual
+pages, and applying critical reasoning and common sense to solve this
+puzzle.
+
+Some tools you may want to investigate:
+        - cat(1)
+        - cut(1)
+        - grep(1)
+        - head(1)
+        - paste(1)
+        - sort(1)
+        - tail(1)
+        - tr(1)
+        - uudecode(1)
+        - uniq(1)
+
+You can verify your results by comparing md5sum hashes- I have stored
+the md5sum hash inside the MANIFEST file in the project public
+directory (just as I've done for your other recent projects).
+
+Keep track of your steps, and place them in a working non-interactive
+script by the name of "pbx1steps", which you will submit along with
+your final ASCII art image, stored in a file called: "pbx1.results"
+
+Your "pbx1steps" file, while I would hope you make use of various
+shell facilities (like quotes, variables, wildcards), please do have
+a focus on having the file be readable with respect to comments and
+general file name references.
+
+To submit, do the following:
+
+    submit unix pbx1 pbx1.results pbx1steps
+
+Some things I will be looking for:
+
+    *:pbx1:submitted pbx1.results file via submit tool
+    *:pbx1:submitted pbx1steps file via submit tool
+    *:pbx1:pbx1.results and pbx1steps pushed to lab46 repository
+    *:pbx1:pbx1.results is correctly unscrambled and assembled
+    *:pbx1:pbx1.results md5sum matches project MANIFEST
+    *:pbx1:pbx1steps has valid list of non-interactive instructions
+    *:pbx1:pbx1steps uses shell features like wildcards, IO redir
+    *:pbx1:pbx1steps contains comments explaining process
+    *:pbx1:pbx1steps sets up local project directories
+    *:pbx1:pbx1steps copy data files with with absolute path
+    *:pbx1:pbx1steps all other paths are relative
+    *:pbx1:pbx1steps automates the project when executed
+    *:pbx1:pbx1steps only outputs user-generated messages
+

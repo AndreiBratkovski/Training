@@ -1,0 +1,6 @@
+#!/bin/bash
+##
+##
+
+perl ${0}.pl ${*}
+exit 0

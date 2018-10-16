@@ -1,0 +1,234 @@
+#!/bin/bash
+##
+## eval - output and functionality compliance script
+##
+## usage: eval [summary] [nothrottle] [nocolor]
+##
+######################################################################
+
+######################################################################
+##
+## Declare variables
+##
+RELEASE="20170925-0824"
+DESIG="discrete"
+PROJECT="bdt0"
+SEMESTER=$(cat /usr/local/etc/semester)
+PUBLICDIR="/var/public/${SEMESTER}/${DESIG}"
+PROJECTDIR="${PUBLICDIR}/${PROJECT}"
+DATADIR="${PROJECTDIR}/in"
+SUMMARY=$(echo  ${*} | grep -qio 'summary'    && echo "true"  || echo "false")
+THROTTLE=$(echo ${*} | grep -qio 'nothrottle' && echo "false" || echo "true")
+COLOR=$(echo    ${*} | grep -qio 'nocolor'    && echo "false" || echo "true")
+SAMPLEFILE="sample0.txt"
+SCORE=0
+TOTAL=0
+LINE1="==================================="
+LINE2="---------------------------------------------------"
+LINE3="----------------------------------------------------------------------"
+
+######################################################################
+##
+## Heading
+##
+if [ "${SUMMARY}" = "false" ]; then
+	echo   "${LINE1}"
+	printf "= %13s Evaluation Script =\n" "${DESIG}/${PROJECT}"
+	echo   "${LINE1}"
+fi
+
+######################################################################
+##
+## Make sure data file exists (check PROJECT files first)
+##
+if [ -r "${DATADIR}/${SAMPLEFILE}" ]; then
+
+	echo -n
+
+######################################################################
+##
+## Make sure data file exists (check local copy next)
+##
+elif [ -r "in/${SAMPLEFILE}" ]; then
+
+	DATADIR="in"
+
+######################################################################
+##
+## Bail out if not found
+##
+else
+	echo "ERROR: Cannot access in/${SAMPLEFILE}"
+	exit 1
+fi
+
+######################################################################
+##
+## Part 0: Ensure basic functionality (compare raw results of 
+##         xxd versus your implementation)
+##
+if [ "${SUMMARY}" = "false" ]; then
+	clear
+	echo "[Part 0]: Compliance with xxd output ..."
+fi
+
+NUM=0
+rm -f out/phase${NUM}.*.chk
+for file in `/bin/ls -1 ${DATADIR}`; do
+
+	PFILE="out/phase${NUM}.${file}.chk"
+	echo
+	printf -- "----[ %11s ]${LINE2}\n" "${file}"
+
+	for program in xxd ./${PROJECT}; do
+
+		DATAFILE=${DATADIR}/${file}
+		CCNT=$(${program} ${DATAFILE} | wc -c)
+		LCNT=$(${program} ${DATAFILE} | wc -l)
+		MD5S=$(${program} ${DATAFILE} | md5sum    | cut -d' ' -f1)
+		echo   "chars:${CCNT}"                             >> ${PFILE}
+		echo   "lines:${LCNT}"                             >> ${PFILE}
+		echo   "md5sum:${MD5S}"                            >> ${PFILE}
+		printf "%4s: %7d char, %5d lines, md5: %s\n" "$(echo ${program} | sed 's/^.*\///')" "${CCNT}" "${LCNT}" "${MD5S}"
+	done
+	echo "${LINE3}"
+	cat ${PFILE}                | sort            | uniq   >  ${PFILE}.results
+	CCNT=$(cat ${PFILE}.results | grep '^chars:'  | wc -l)
+	LCNT=$(cat ${PFILE}.results | grep '^lines:'  | wc -l)
+	MCNT=$(cat ${PFILE}.results | grep '^md5sum:' | wc -l)
+	echo -n " CHK:     "
+	for chk in ${CCNT} ${LCNT} ${MCNT}; do
+		if [ "${CCNT}" -eq 1 ]; then
+			let SCORE=SCORE+1
+			printf "%8s     " "OK"
+		else
+			printf "%8s     " "MISMATCH"
+		fi
+		let TOTAL=TOTAL+1
+	done
+
+	echo
+	echo "${LINE3}"
+done
+
+if [ "${SUMMARY}" = "false" ]; then
+	echo -n "Tally: ${SCORE}/${TOTAL} | Press ENTER to continue"
+	read enter
+fi
+
+######################################################################
+##
+## Part 1: Check line throttling functionality
+##
+if [ "${SUMMARY}" = "false" ]; then
+	clear
+	echo "[Part 1]: Testing line throttling ..."
+fi
+
+######################################################################
+##
+## If we have specifically disabled throttle testing, skip entirely
+##
+if [ "${THROTTLE}" = "true" ]; then
+
+	NUM=1
+	rm -f out/phase${NUM}.*.chk
+	for file in `/bin/ls -1 ${DATADIR}`; do
+
+		PFILE="out/phase${NUM}.${file}.chk"
+		CAP=$(xxd ${DATADIR}/${file} | wc -l)
+		MAX=`echo "$((${RANDOM}%${CAP}+1))"`
+		echo
+		printf -- "----[ %11s ]${LINE2}\n" "${file}"
+
+		for program in xxd ./${PROJECT}; do
+
+			DATAFILE=${DATADIR}/${file}
+			if [ "${program}" = "xxd" ]; then
+				CCNT=$(${program} ${DATAFILE} | head -${MAX} | wc -c)
+				LCNT=$(${program} ${DATAFILE} | head -${MAX} | wc -l)
+				MD5S=$(${program} ${DATAFILE} | head -${MAX} | md5sum | cut -d' ' -f1)
+			else
+				CCNT=$(${program} ${DATAFILE} ${MAX} | wc -c)
+				LCNT=$(${program} ${DATAFILE} ${MAX} | wc -l)
+				MD5S=$(${program} ${DATAFILE} ${MAX} | md5sum | cut -d' ' -f1)
+			fi
+
+			#echo "***${program} ${DATAFILE} ${CAP} | wc -c"
+			echo   "chars:${CCNT}"                         >> ${PFILE}
+			echo   "lines:${LCNT}"                         >> ${PFILE}
+			echo   "md5sum:${MD5S}"                        >> ${PFILE}
+			printf "%4s: %7d char, %5d lines, md5: %s\n" "$(echo ${program} | sed 's/^.*\///')" "${CCNT}" "${LCNT}" "${MD5S}"
+		done
+		echo "${LINE3}"
+		cat ${PFILE}                | sort        | uniq   >  ${PFILE}.results
+		CCNT=$(cat ${PFILE}.results | grep '^chars:'  | wc -l)
+		LCNT=$(cat ${PFILE}.results | grep '^lines:'  | wc -l)
+		MCNT=$(cat ${PFILE}.results | grep '^md5sum:' | wc -l)
+		echo -n " CHK:     "
+		for chk in ${CCNT} ${LCNT} ${MCNT}; do
+			if [ "${CCNT}" -eq 1 ]; then
+				let SCORE=SCORE+1
+				printf "%8s     " "OK"
+			else
+				printf "%8s     " "MISMATCH"
+			fi
+			let TOTAL=TOTAL+1
+		done
+
+		echo
+		echo "${LINE3}"
+	done
+
+	if [ "${SUMMARY}" = "false" ]; then
+		echo -n "Tally: ${SCORE}/${TOTAL} | Press ENTER to continue"
+		read enter
+	fi
+else
+	echo "DISABLED per user request, skipping."
+fi
+
+######################################################################
+##
+## Part 2: Test address/length highlighting
+##
+VALUES="0x0b 3 0x23 6 0x7d 7 0x41 1 0x54 4"
+if [ "${SUMMARY}" = "false" ]; then
+	clear
+	echo "[Part 2]: Address highlighting ... ${VALUES}"
+fi
+
+######################################################################
+##
+## If we have specifically disabled throttle testing, skip entirely
+##
+if [ "${THROTTLE}" = "true" ]; then
+
+	NUM=2
+	rm -f out/phase${NUM}.*.chk
+	for file in `/bin/ls -1 ${DATADIR}`; do
+
+		PFILE="out/phase${NUM}.${file}.chk"
+		CAP=$(xxd ${DATADIR}/${file} | wc -l)
+		MAX=9
+		echo
+		printf -- "----[ %11s ]${LINE2}\n" "${file}"
+
+		program="./${PROJECT}"
+
+		DATAFILE=${DATADIR}/${file}
+		${program} ${DATAFILE} ${MAX} ${VALUES}
+
+		#echo "***${program} ${DATAFILE} ${CAP} | wc -c"
+		echo "${LINE3}"
+
+		if [ "${SUMMARY}" = "false" ]; then
+			echo -n "Press ENTER to continue"
+			read enter
+		fi
+	done
+else
+	echo "DISABLED per user request, skipping."
+fi
+
+exit 0

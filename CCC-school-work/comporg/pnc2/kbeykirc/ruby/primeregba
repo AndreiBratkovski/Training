@@ -1,0 +1,6 @@
+#! /bin/bash
+
+# wrapper to execute primeregba.rb
+
+ruby ${0}.rb ${*}
+exit 0

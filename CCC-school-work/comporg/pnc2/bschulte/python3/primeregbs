@@ -1,0 +1,6 @@
+#!/bin/bash
+##
+##
+
+python3 ${0}.py ${*} 
+exit 0

@@ -1,0 +1,180 @@
+#!/bin/bash
+##
+## nbm0 eval script - validate algorithm and output
+##
+## usage: ./eval [BASE] [summary]
+##
+## option of BASE will cause the script to ONLY process for the
+##    indicated base (2-36).
+##
+## option of summary will cause the script to skip all outputs
+##    except the final stats.
+##
+## script contributions by:
+##    Andrei Bratovski, fall2017/discrete (20171102) - creation and enhancements
+##    Rob Howe, fall2017/discrete (20171102) - executable detection
+##
+
+######################################################################
+##
+## Declare variables
+##
+PROJECT="nbm0"
+MASTERFILE="/usr/local/etc/${PROJECT}.master"
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+NOCOLOR='\033[0m'
+totalEvaluated=0
+totalCorrect=0
+HEADER="========================================================================="
+OVERALLPOINTS=0
+OVERALL=0
+SUMMARY=$(echo ${*} | grep -qio 'summary' && echo "true" || echo "false")
+counter=0
+curBase=0
+INBASE=
+NUMBER=
+BASEREGEX="^.*$"
+OUTBASE=
+EXEC=`file *.c | cut -d"." -f1`
+
+clear
+
+######################################################################
+##
+## Check for first command-line argument: process only specified base
+##
+if [ ! -z "${1}" ] && [ ! "${1}" = "summary" ]; then
+    nchk=$(echo "${1}" | grep '^[2-9][0-9]*$' | wc -l)
+    if [ "${nchk}" -eq 1 ] && [ "${1}" -ge 2 ] && [ "${1}" -le 36 ]; then
+        BASEREGEX="^\<${1}\>,"
+    fi
+fi
+
+######################################################################
+##
+## Process applicable entries in MASTERFILE
+##
+for argument in `cat ${MASTERFILE} | grep "${BASEREGEX}"`; do
+    
+    ##################################################################
+    ##
+    ## Set our important iteration variables
+    ##
+    INBASE=$(echo  "${argument}" | cut -d',' -f1)
+    NUMBER=$(echo  "${argument}" | cut -d',' -f2)
+    OUTBASE=$(echo "${argument}" | cut -d':' -f1 | cut -d',' -f3)
+    MAXQTY=`cat    ${MASTERFILE} | grep "^\<${INBASE}\>," | wc -l`
+
+    ##################################################################
+    ##
+    ## Central processing: grab inputs, run program, compare output
+    ##
+    YOUHAVE=$(./${EXEC} ${INBASE} ${NUMBER} ${OUTBASE})
+    SHOULDBE=$(echo "${argument}" | cut -d':' -f2)
+
+    ##################################################################
+    ##
+    ## If SUMMARY mode is enabled, do not display superficial info
+    ##
+    if [ "${SUMMARY}" = "false" ]; then
+
+        ##############################################################
+        ##
+        ## At the beginning of an INBASE run? Display the lead-in
+        ## heading identifying the base
+        ##
+        if [ "${counter}" = 0 ]; then
+            echo   "${HEADER}"
+            printf "Nbm0 - BASE %d, total entries: %d\n" "${INBASE}" "${MAXQTY}"
+            echo   "${HEADER}"
+        fi
+
+        ##############################################################
+        ##
+        ## DIsplay results from processing
+        ##
+        printf     "%20s: %19s, Reference: %19s" "[${INBASE},${NUMBER},${OUTBASE}]" "${YOUHAVE}" "${SHOULDBE}"
+
+        ##############################################################
+        ##
+        ## Colorize the match status (green "OK" or red "FAIL")
+        ##
+        if [ "${YOUHAVE}" = "${SHOULDBE}" ]; then
+            printf "${GREEN}%5s${NOCOLOR}\n" "OK"
+        else
+            printf "${RED}%5s${NOCOLOR}\n" "FAIL"
+        fi
+
+        ##############################################################
+        ##
+        ## At the end of an INBASE run? Stop output and prompt user
+        ## to continue, and display some stats
+        ##
+        if [ "${counter}" = "${MAXQTY}" ]; then
+
+            echo
+            echo "${HEADER}"
+
+            if [ $totalCorrect = $totalEvaluated ]; then
+                printf "${GREEN}%-8s${NOCOLOR}" "SUCCESS"
+            else
+                printf "${RED}%-8s${NOCOLOR}" "FAIL"
+            fi
+
+            printf "Base %d: %d/%d" ${INBASE} $totalCorrect $totalEvaluated
+            printf "%20s %10d/%d\n" "Overall:" "${OVERALLPOINTS}" "${OVERALL}"
+
+            ##############################################################
+            ##
+            ## Prompt user to continue viewing results
+            ##
+            echo "${HEADER}"
+        
+            echo -n "Press ENTER to continue"
+            read enter
+
+            ##############################################################
+            ##
+            ## Reset appropriate tallying variables for next section
+            ##
+            totalEvaluated=0
+            totalCorrect=0
+            counter=0
+            clear
+        fi
+    fi
+
+    ##################################################################
+    ##
+    ## If a match, tally appropriate variables
+    ##
+    if [ "${YOUHAVE}" = "${SHOULDBE}" ]; then
+        let totalCorrect=totalCorrect+1
+        let OVERALLPOINTS=OVERALLPOINTS+1
+    fi
+
+    ##################################################################
+    ##
+    ## Per entry, tally up totalling variables
+    ##
+    let totalEvaluated=totalEvaluated+1
+    let OVERALL=OVERALL+1
+    let counter=counter+1
+
+    ##################################################################
+    ##
+    ## For INBASE change detection, store our current INBASE into
+    ## this CURBASE variable
+    ##
+    CURBASE="${INBASE}"
+done
+
+if [ "${nchk}" -eq 1 ]; then
+	echo
+fi
+
+echo "Final Tally: ${OVERALLPOINTS} / ${OVERALL}"
+echo "Percent achieved of total: `echo \"scale=2;$OVERALLPOINTS/$OVERALL*100\" | bc -lq`%"
+
+exit 0

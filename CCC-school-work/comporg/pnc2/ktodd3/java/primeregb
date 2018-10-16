@@ -1,0 +1,4 @@
+#!/bin/bash
+
+export CLASSPATH=${HOME}/src/pnc1/java
+java -XX:MaxHeapSize=512M -XX:InitialHeapSize=256M -XX:CompressedClassSpaceSize=128M -XX:MaxMetaspaceSize=128m -XX:MetaspaceSize=64m primeregb ${1}

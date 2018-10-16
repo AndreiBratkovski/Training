@@ -1,0 +1,30 @@
+Puzzlebox: NEXT
+===============
+You got this far- good!
+
+Now the real fun begins. There is a file in the archive
+called 'enigmatic.file'; its password is "e7c8f42c" (without the quotes).
+
+Decrypt and extract it from the archive.
+
+Look inside it; this data is encoded somehow. Determine the potential
+patterns that may govern it, and explore different ways of decoding it.
+
+Be careful, exactness can matter!
+
+As you go along, apply your senses of pattern matching to unjumble
+what you have gotten. As always- avoid manual work: use tools on the
+system to help you.
+
+You will be assembling the entire gamut of steps performed into a script
+called "pbx1steps" that you will submit at the conclusion of the project;
+if you execute this script, it should non-interactively be able to copy,
+unravel, and produce the end result (basically from the initial copy to
+just prior to the final submit step).
+
+The unraveled product (something ordered, visual, with some wit) should
+be placed in a file called 'pbx2.results', which is what you are to
+submit upon project completion:
+
+	submit unix pbx2 pbx2.results pbx2steps
+

@@ -1,0 +1,32 @@
+*.tar.gz
+Makefile
+errors
+<<<<<<< HEAD
+.hg*
+=======
+*.hg
+*.o
+*.gz
+*.tar
+*.swp
+*.pyc
+*.o
+*~
+
+*.bak
+*.tar
+errors
+*.hg
+*.mp3
+*.png
+*.jpeg
+.nfs*
+in/*
+out/*
+.DS_Store
+*.txt
+*.rle
+*.wav
+*.bmp
+
+>>>>>>> 83502a7fce9ac7599c74735ab2729f8a9fe47d5e

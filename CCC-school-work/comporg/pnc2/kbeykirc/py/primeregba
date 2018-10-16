@@ -1,0 +1,6 @@
+#! /bin/bash
+
+# wrapper to execute primeregba.py
+
+python ${0}.py ${*}
+exit 0

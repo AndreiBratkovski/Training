@@ -1,0 +1,55 @@
+task: 0
+result: 5
+numbers: ONLY(three(2), five, seven, nine)
+operations: ANY
+min_pipes: 2
+max_pipes: ANY
+
+task: 1
+result: 9
+numbers: ONLY(three(2), five, seven, nine)
+operations: ANY
+min_pipes: 2
+max_pipes: ANY
+
+task: 2
+result: 22
+numbers: ONLY(zero, one(1), two(2), three(3), five(2))
+operations: ANY, E2CEPT(plus)
+min_pipes: 3
+max_pipes: ANY
+
+task: 3
+result: 11
+numbers: ONLY(zero, one(1), two(1), three(3), five(2))
+operations: ANY, E3CEPT(plus)
+min_pipes: 3
+max_pipes: ANY
+
+task: 4
+result: -8
+numbers: ANY, E4CEPT(two, six, seven)
+operations: ANY, WITH_LIMITS(multby(1), plus(3)), E4CEPT(divideby)
+min_pipes: 4
+max_pipes: 4
+
+task: 5
+result: 7
+numbers: ANY, E5CEPT(two, six, seven)
+operations: ANY, WITH_LIMITS(multby(1), plus(3)), E5CEPT(divideby)
+min_pipes: 4
+max_pipes: 4
+
+task: 6
+result: -1
+numbers: ONLY(seven(1), eight, nine)
+operations: ONLY(multby(1), plus(2), divideby(1), minus(1), sqrt, modulus, abs, negate)
+min_pipes: 5
+max_pipes: 16
+
+task: 7
+result: -2
+numbers: ONLY(three(2), four, five)
+operations: ONLY(multby(3), divideby(2), sqrt, modulus, abs, negate)
+min_pipes: 5
+max_pipes: 12

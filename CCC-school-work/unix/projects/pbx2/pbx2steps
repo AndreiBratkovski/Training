@@ -1,0 +1,52 @@
+# Andrei Bratkovski pbx2 9/14/17
+#create and copy project directory to own directory
+
+cd /
+cd var/public/fall2017/UNIX/pbx2/abratkov
+cp pbx2.zip ~/src/unix/projects/pbx2
+cd pbx2
+
+# unzip pbx2.zip
+file pbx2.zip
+unzip pbx2.zip
+#Press enter key since you don't know password yet
+cat README
+# read the README
+unzip pbx2.zip
+#input first passwod
+e7c8f42c
+# Press enter since you don't know password
+file enigmatic.file
+file hex2ascii.c
+file octal2ascii.c
+cat enigmatic.file
+cat hex2ascii.c
+cat octal2ascii.c
+#check and read all filetypes
+gcc octal2ascii.c -o octal2ascii
+gcc hex2ascii.c -o hex2ascii
+#compile both c source codes
+file stage2
+chmod 755 stage2
+#allow myself to view stage2
+cat stage2
+./octal2ascii 124 150 145 40 160 141 163 163 167 157 162 144 40 164 150 141 164 40 171 157 165 40 163 145 145 153 40 151 163 40 50 167 151 164 150 157 165 164 40 164 150 145 40 161 165 157 164 145 163 51 72 40 42 63 63 142 142 146 61 61 70 42 12
+#decode stage 2 from octal to ascii
+unzip pbx2.zip
+n
+#write in old password
+e7c8f42c
+n
+n
+n
+33bbf118
+#write in stage 2 password
+# concatenate and sort bat files into a beautiful bat
+cat part1
+cat part2
+cat part3
+cat part4
+cat part1 part2 part3 part4 >> bat
+sort -n bat >> batSorted
+mv batSorted pbx2.results
+#ITS A BAT....GEE WILLIKERS BATMAN! -Andrei

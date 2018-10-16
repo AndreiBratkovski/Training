@@ -1,0 +1,49 @@
+#
+# Andrei Bratkovski UNIX knowledge assessment, puzzle box
+# 10/5/2017
+#
+# Go to public directory and copy project files over to home directory
+
+cd /var/public/fall2017/unix/
+cd uka0
+cp MANIFEST ~/src/unix/projects/
+cd abratkov
+cp uka0.doc ~/src/unix/projects/
+cp README ~/src/unix/projects/
+cd ~/src/unix/projects/
+mkdir uka0
+mv uka0.doc uka0
+mv README uka0
+mv MANIFEST uka0
+cd uka0
+mv uka0.doc uka0.gz
+
+# cutting the datafile apart until
+# there is a top left, bottom left, top right, and bottom right file, indicating
+# the positions of the puzzle.  Then we reverse the files that need to be reversed
+# so that they are facing the correct direction
+
+cat datafile | cut -d "X" -f1 > leftField
+sed -n '1,15p' leftField > bottomRight
+sed -n '17,31p' leftField > topLeft
+cat topLeft | rev > topLeft1
+mv topLeft1 topLeft
+cat datafile | cut -d X -f2 > rightField
+sed -n '1,15p' rightField > bottomLeft
+sed -n '17,31p' rightField > topRight
+
+# pasting together all of the pieces, first into a Top and then Bottom file
+# representing top and bottom halves of puzzle box
+
+
+paste -d '\0' bottomLeft bottomRight > Bottom
+
+rev topRight > topRight1
+mv topRight1 topRight
+
+paste -d '\0'topLeft topRight > Top
+
+#
+# creating results by concatenating top and bottom
+#
+cat Top Bottom > uka0.results

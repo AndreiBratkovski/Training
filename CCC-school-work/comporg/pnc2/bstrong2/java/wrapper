@@ -1,0 +1,10 @@
+#!/bin/bash
+##
+##
+
+
+gcj --main=primeregbs primeregbs.java
+
+
+./a.out ${*}
+

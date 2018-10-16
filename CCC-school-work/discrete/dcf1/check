@@ -1,0 +1,474 @@
+#!/bin/bash
+##
+## dcfX validator script - test encoding/decoding on available
+##                         project data files.
+##
+
+######################################################################
+##
+## Declare variables
+##
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+NOCOLOR='\033[0m'
+STRIDE=
+CONTRL=
+DESIG="discrete"
+PROJECT="dcf1"
+MISSING="no"
+MD5SUM="md5sum"
+NUM=0
+
+######################################################################
+##
+## Set directory vars
+##
+IND="in"
+MID="m${NUM}"
+OUT="o${NUM}"
+
+######################################################################
+##
+## Create check directories (in#, mid#, out#)
+##
+mkdir -p ./${MID} ./${OUT}
+
+######################################################################
+##
+## Clear out existing data files (from out/ and tmp/)
+##
+rm -f ./${MID}/* ./${OUT}/*
+
+######################################################################
+##
+## Announce check "phase"
+##
+echo "================================================="
+echo "= PHASE 0: Raw -> Encode data verification test ="
+echo "================================================="
+
+######################################################################
+##
+## Process the unencoded data files in the in#/ directory
+##
+for file in $(/bin/ls -1 ${IND}/ | grep -v 'rle' | grep '[0-9]\.'); do
+
+    ##################################################################
+    ##
+    ## Bail out of test if critical component is missing
+    ##
+    if [ ! -e "encode" ]; then
+        echo "Missing 'encode', skipping test."
+        break
+    fi
+
+    ##################################################################
+    ##
+    ## Strip out any path information, display data file being
+    ## tested.
+    ##
+    dfile=$(echo "${file}"    | sed 's/^.*\///g')
+    printf "%s -> %s: " "${IND}/${dfile}" "${OUT}/${dfile}.rle"
+
+    ##################################################################
+    ##
+    ## Obtain stride to match example data files (stride value is
+    ## encoded in file's name.
+    ##
+    STRIDE=$(echo ${dfile} | grep -o '[0-9][0-9]*\.' | tr -d '.')
+
+    ##################################################################
+    ##
+    ## Store provided RLE file's hash
+    ##
+    original=$(${MD5SUM} in/${dfile}.rle | cut -d' ' -f1)
+
+    ##################################################################
+    ##
+    ## Encode file
+    ##
+    if [ -e "encode" ]; then
+        ./encode ${IND}/${dfile} ${OUT} ${STRIDE} ${CONTRL} >  /dev/null
+    else
+        MISSING="encode"
+    fi
+
+    ##################################################################
+    ##
+    ## Store resulting hash
+    ##
+    if [ -e "${OUT}/${dfile}.rle" ]; then
+        result=$(${MD5SUM} ${OUT}/${dfile}.rle | cut -d' ' -f1)
+    else
+        result=
+    fi
+
+    ##################################################################
+    ##
+    ## Compare original and decoded hashes
+    ##
+    if [ "${original}" = "${result}" ]; then
+        printf "${GREEN}OK${NOCOLOR}\n"
+    elif [ ! "${MISSING}" = "no" ]; then
+        printf "${YELLOW}MISSING: ${MISSING}${NOCOLOR}\n"
+    else    
+        printf "${RED}FAIL: checksums do not match${NOCOLOR}\n"
+    fi
+done
+echo
+
+######################################################################
+##
+## Reset variables for next test
+##
+MISSING="no"
+NUM=1
+original=
+result=
+
+######################################################################
+##
+## Set directory vars
+##
+IND="in"
+MID="m${NUM}"
+OUT="o${NUM}"
+
+######################################################################
+##
+## Create check directories (in#, mid#, out#)
+##
+mkdir -p ./${MID} ./${OUT}
+
+######################################################################
+##
+## Clear out existing data files (from out/ and tmp/)
+##
+rm -f ./${MID}/* ./${OUT}/*
+
+######################################################################
+##
+## Announce check "phase"
+##
+echo "================================================="
+echo "= PHASE 1: Decode -> Raw data verification test ="
+echo "================================================="
+
+######################################################################
+##
+## Process the encoded data files in the in#/ directory
+##
+for file in $(/bin/ls -1 ${IND}/ | grep 'rle'    | grep '[0-9]\.'); do
+
+    ##################################################################
+    ##
+    ## Bail out of test if critical component is missing
+    ##
+    if [ ! -e "decode" ]; then
+        echo "Missing 'decode', skipping test."
+        break
+    fi
+
+    ##################################################################
+    ##
+    ## Strip out any path information
+    ##
+    dfile=$(echo "${file}"    | sed 's/^.*\///g')
+    rfile=$(echo "${dfile}"   | cut -d'.' -f1,2)
+
+    ##################################################################
+    ##
+    ## Store original data file's hash, if it exists
+    ##
+    if [ -e "in/${rfile}" ]; then
+        original=$(${MD5SUM} in/${rfile} | cut -d' ' -f1)
+    else
+        continue
+    fi
+
+    ##################################################################
+    ##
+    ## display data file being tested.
+    ##
+    printf "%s -> %s: " "${IND}/${dfile}" "${OUT}/${rfile}"
+
+    ##################################################################
+    ##
+    ## Decode file
+    ##
+    if [ -e "decode" ]; then
+        ./decode ${IND}/${dfile} ${OUT} >  /dev/null
+    else
+        MISSING="decode"
+    fi
+        
+    ##################################################################
+    ##
+    ## Store resulting hash
+    ##
+    if [ -e "${OUT}/${rfile}" ]; then
+        result=$(${MD5SUM} ${OUT}/${rfile} | cut -d' ' -f1)
+    else
+        result=
+    fi
+
+    ##################################################################
+    ##
+    ## Compare original and decoded hashes
+    ##
+    if [ "${original}" = "${result}" ]; then
+        printf "${GREEN}OK${NOCOLOR}\n"
+    elif [ ! "${MISSING}" = "no" ]; then
+        printf "${YELLOW}MISSING: ${MISSING}${NOCOLOR}\n"
+    else    
+        printf "${RED}FAIL: checksums do not match${NOCOLOR}\n"
+    fi
+done
+echo
+
+######################################################################
+##
+## Reset variables for next test
+##
+MISSING="no"
+NUM=2
+original=
+result=
+
+######################################################################
+##
+## Set directory vars
+##
+IND="in"
+MID="m${NUM}"
+OUT="o${NUM}"
+
+######################################################################
+##
+## Create check directories (in#, mid#, out#)
+##
+mkdir -p ./${MID} ./${OUT}
+
+######################################################################
+##
+## Clear out existing data files (from out/ and tmp/)
+##
+rm -f ./${MID}/* ./${OUT}/*
+
+######################################################################
+##
+## Announce check "phase"
+##
+echo "================================================"
+echo "= PHASE 2: Raw -> Encode -> Decode -> Raw test ="
+echo "================================================"
+
+######################################################################
+##
+## Process the encoded data files in the in/ directory
+##
+for file in $(/bin/ls -1 ${IND}/ | grep -v 'rle' | grep '[0-9]\.'); do
+
+    ##################################################################
+    ##
+    ## Bail out of test if critical component is missing
+    ##
+    if [ ! -e "decode" ] || [ ! -e "encode" ]; then
+        echo "Missing 'encode' ior 'decode', skipping test."
+        break
+    fi
+
+    ##################################################################
+    ##
+    ## Strip out any path information, display data file being
+    ## tested.
+    ##
+    dfile=$(echo "${file}"    | sed 's/^.*\///g')
+    printf "%s -> %s -> %s: " "${IND}/${dfile}" "${MID}/${dfile}.rle" "${OUT}/${dfile}"
+
+    ##################################################################
+    ##
+    ## Obtain stride to match example data files (stride value is
+    ## encoded in file's name.
+    ##
+    STRIDE=$(echo ${dfile} | grep -o '[0-9][0-9]*\.' | tr -d '.')
+
+    ##################################################################
+    ##
+    ## Store original data file's hash
+    ##
+    original=$(${MD5SUM} in/${dfile} | cut -d' ' -f1)
+
+    ##################################################################
+    ##
+    ## Encode file
+    ##
+    if [ -e "encode" ]; then
+        ./encode ${IND}/${dfile} ${MID} ${STRIDE} ${CONTRL} >  /dev/null
+    else
+        MISSING="encode"
+    fi
+
+    ##################################################################
+    ##
+    ## Decode file
+    ##
+    if [ -e "decode" ]; then
+        ./decode ${MID}/${dfile}.rle ${OUT} >  /dev/null
+    else
+        MISSING="${MISSING} decode"
+    fi
+        
+    ##################################################################
+    ##
+    ## Store resulting hash
+    ##
+    if [ -e "${OUT}/${dfile}" ]; then
+        result=$(${MD5SUM} ${OUT}/${dfile} | cut -d' ' -f1)
+    else
+        result=
+    fi
+
+    ##################################################################
+    ##
+    ## Compare original and decoded hashes
+    ##
+    if [ "${original}" = "${result}" ]; then
+        printf "${GREEN}OK${NOCOLOR}\n"
+    elif [ ! "${MISSING}" = "no" ]; then
+        printf "${YELLOW}MISSING: ${MISSING}${NOCOLOR}\n"
+    else    
+        printf "${RED}FAIL: checksums do not match${NOCOLOR}\n"
+    fi
+done
+echo
+
+######################################################################
+##
+## Reset variables for next test
+##
+MISSING="no"
+NUM=3
+original=
+result=
+
+######################################################################
+##
+## Set directory vars
+##
+IND="in"
+MID="m${NUM}"
+OUT="o${NUM}"
+
+######################################################################
+##
+## Create check directories (in#, mid#, out#)
+##
+mkdir -p ./${MID} ./${OUT}
+
+######################################################################
+##
+## Clear out existing data files (from out/ and tmp/)
+##
+rm -f ./${MID}/* ./${OUT}/*
+
+######################################################################
+##
+## Announce check "phase"
+##
+echo "============================================="
+echo "= PHASE 3: Decode -> Raw -> Encode Raw test ="
+echo "============================================="
+
+######################################################################
+##
+## Process the encoded data files in the in/ directory
+##
+for file in $(/bin/ls -1 ${IND}/ | grep 'rle'    | grep '[0-9]\.'); do
+
+    ##################################################################
+    ##
+    ## Bail out of test if critical component is missing
+    ##
+    if [ ! -e "decode" ] || [ ! -e "encode" ]; then
+        echo "Missing 'encode' ior 'decode', skipping test."
+        break
+    fi
+
+    ##################################################################
+    ##
+    ## Strip out any path information, display data file being
+    ## tested.
+    ##
+    dfile=$(echo "${file}"    | sed 's/^.*\///g')
+    rfile=$(echo "${dfile}"   | cut -d'.' -f1,2)
+
+    ##################################################################
+    ##
+    ## Obtain stride to match example data files (stride value is
+    ## encoded in file's name.
+    ##
+    STRIDE=$(echo ${rfile} | grep -o '[0-9][0-9]*\.' | tr -d '.')
+
+    ##################################################################
+    ##
+    ## Store original data file's hash, if it exists
+    ##
+    if [ -e "in/${rfile}" ]; then
+        original=$(${MD5SUM} in/${dfile} | cut -d' ' -f1)
+    else
+        continue
+    fi
+
+    ##################################################################
+    ##
+    ## display data file being tested.
+    ##
+    printf "%s -> %s -> %s: " "${IND}/${dfile}" "${MID}/${rfile}" "${OUT}/${dfile}"
+
+    ##################################################################
+    ##
+    ## Decode file
+    ##
+    if [ -e "decode" ]; then
+        ./decode ${IND}/${dfile} ${MID} >  /dev/null
+    else
+        MISSING="decode"
+    fi
+        
+    ##################################################################
+    ##
+    ## Encode file
+    ##
+    if [ -e "encode" ]; then
+        ./encode ${MID}/${rfile} ${OUT} ${STRIDE} ${CONTRL} >  /dev/null
+    else
+        MISSING="${MISSING} encode"
+    fi
+
+    ##################################################################
+    ##
+    ## Store resulting hash
+    ##
+    if [ -e "${OUT}/${dfile}" ]; then
+        result=$(${MD5SUM} ${OUT}/${dfile} | cut -d' ' -f1)
+    else
+        result=
+    fi
+
+    ##################################################################
+    ##
+    ## Compare original and decoded hashes
+    ##
+    if [ "${original}" = "${result}" ]; then
+        printf "${GREEN}OK${NOCOLOR}\n"
+    elif [ ! "${MISSING}" = "no" ]; then
+        printf "${YELLOW}MISSING: ${MISSING}${NOCOLOR}\n"
+    else    
+        printf "${RED}FAIL: checksums do not match${NOCOLOR}\n"
+    fi
+done
+echo
+
+exit 0

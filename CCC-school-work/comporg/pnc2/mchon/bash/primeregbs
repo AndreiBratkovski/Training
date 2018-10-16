@@ -1,0 +1,92 @@
+##########################################################
+##
+## Bash Implementation of prime reg - Break w/ sqrt
+##
+#!/bin/bash
+
+##########################################################
+##
+## Error Checking
+##
+if [[ -z $1 ]]
+then
+	echo "Insufficient Argument!"
+	exit
+fi
+##########################################################
+##
+## Variable Declaration
+##
+MAX=$1
+FLAG=0
+FACTOR=0
+NUMBER=2
+
+QTY=0
+##########################################################
+##
+## Time start
+##
+startmil=`date +.%6N`
+startsec=`date +%s`
+##########################################################
+##
+## Main Algorithm
+##
+
+##########################################################
+##
+## Prints all the number up to qty
+##
+while [ $QTY -lt $MAX ]
+do
+	FACTOR=2
+	######################################################
+	##
+	## Checks all the factor inside the number for
+	## composition
+	##
+	while [ $FACTOR -le `echo "sqrt($NUMBER)" | bc` ]
+	do
+		##################################################
+		##
+		## Checks the factor to the number. If there
+		## is a factor inside the number, then flag it
+		##
+		if [ $(( $NUMBER%$FACTOR )) -eq 0 ]
+		then
+			FLAG=1
+			break
+		fi
+		(( FACTOR++ ))
+	done
+	######################################################
+	##
+	## If there were no factors, print out the number and
+	## increment qty
+	##
+	if [ $FLAG -eq 0 ]
+	then
+		echo -n "$NUMBER " >&2
+		(( QTY++ ))
+	fi
+	######################################################
+	##
+	## Resets the flag and moves to the next number
+	##
+	FLAG=0
+	(( NUMBER++ ))
+done
+##########################################################
+##
+## Time end
+##
+endmil=`date +.%6N`
+endsec=`date +%s`
+##########################################################
+##
+## Prints the time
+##
+echo "" >&1
+printf "%8.6f\n" `echo "($endsec - $startsec)+(($endmil-$startmil))" | bc`
+exit

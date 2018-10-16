@@ -1,0 +1,77 @@
+#!/usr/bin/env python
+########################################################
+##
+##importing the libraries being used
+##
+import sys
+import math
+import time
+
+########################################################
+##
+## This if statement is the python version of checking
+## to see how many inputs the user had. The 1st elif
+## checks to see if the number input is 0 if so return
+## error and exit program, the 2nd checks to see if the
+## user had more than what the program is looking for
+##
+if len(sys.argv) == 1:
+	sys.stderr.write('Invalid arguments!\n')
+	sys.exit()
+elif sys.argv[1] == 0:
+	sys.stderr.write('You want to see primes right?\n')
+	sys.exit()
+elif len(sys.argv) > 2:
+	sys.stderr.write('Not implemented\n')
+	sys.exit()
+########################################################
+##
+## Next it's time to set the variables for the calc.
+## Set max = to the number that the user imput. Then
+## set lowerbound = to 2 and the found value to 0. Then
+## start the timer for the calc.
+##
+max = int(sys.argv[1])	
+lowerbound = 2
+maxFound = 0
+start_time = time.time()
+########################################################
+##
+## This loop goes for as long as the maxFound is < max.
+## make sure to reset divisor, flag, and sqrt everytime
+## for the max divisor check. THen have another while
+## loop.
+##
+while(maxFound < max):
+	divisor = 2
+	flag = 0
+	sqrt = lowerbound**(.5)
+	####################################################
+	##
+	## This loop goes as long as the divisor is less 
+	## than the sqrt value. Then have an if to check
+	## the remainder and if it ever hits 0 then set
+	## flag off and break out of the loop.
+	## *incrementing lowerbound and divisor in the
+	## while loops*
+	##
+	while (divisor <= sqrt):
+		if (lowerbound % divisor == 0):
+			flag = 1
+			break
+		divisor += 1
+	####################################################
+	##
+	## If the flag is 0 then that means that the number
+	## is prime. Increment the found value and output
+	## it to stderr.
+	##
+	if flag == 0:
+		maxFound += 1
+		sys.stderr.write('%d ' % lowerbound)
+	lowerbound += 1
+####################################################
+##
+## Then print out the final run time of the calc.
+##
+print("\n	%.4f" % (time.time() - start_time))

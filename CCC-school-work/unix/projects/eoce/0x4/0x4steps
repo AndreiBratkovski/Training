@@ -1,0 +1,62 @@
+#
+# 0x4 - Behind the Lines - Andrei Bratkovski
+# UNIX eoce
+#
+
+#
+# First I rewrote the width and size to be 150x300 in the
+# sprite.c code, and then copied it over to a new program name
+#
+# so I had sprite, and sprite150300
+# sprite would make an 800 x 600 image, and sprite150300 would
+# make a 150 x 300 image.
+
+# Then, I found my uid
+
+id -u abratkov
+
+# which came out to be 6082
+
+# I then compile both sprite and sprite150300
+
+gcc -o sprite sprite.c -lgd
+gcc -o sprite150300 sprite150300.c -lgd
+
+# Then I made 4 files for each mumber in my uid,
+# six, zero, eight, and two
+cp blank.dat six.dat
+cp blank.dat eight.dat
+cp blank.dat two.dat
+
+# I then edited those files to contain 9's in the format
+# that formed a number for each. I used 4's in the third digit
+# so that it would be a blue eight ( as instructed ).
+# then I ran the program on each of these files to create png images
+#
+
+cp six.dat sprite.dat
+./sprite150300 six.png
+
+cp eight.dat sprite.dat
+./sprite150300 eight.png
+
+cp two.dat sprite.dat
+./sprite150300 two.png
+
+cp zero.dat sprite.dat
+./sprite150300 zero.png
+
+#
+# Afterwards I appended all of these images together left to right
+# using the convert function
+#
+convert +append six.png zero.png eight.png two.png uid.png
+
+# now we have the image in uid.png. Lastly, I force resized the image
+# to be 800x600
+#
+convert -resize 800x600! uid.png uidsize.png
+
+# its complete! then I renamed the file to uidsize.png to uidCOMPLETE.png
+mv uidsize.png uidCOMPLETE.png
+

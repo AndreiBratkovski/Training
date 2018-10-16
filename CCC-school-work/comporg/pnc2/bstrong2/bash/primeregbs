@@ -1,0 +1,171 @@
+#!/bin/bash
+
+#########################################################
+##
+## To start the program we have to check and see how many
+## parameters the user specified. So check for 0, if so
+## return an error. Then check to see if it's 1 if it
+## is then set the numPrimes var to the number the user
+## specified and set counter to 1 and primeNum to 3 then
+## set the upperbound to a bigger number than we will
+## be checking for, then print off a 2, because at this
+## point we are just outputting the amount of primes.
+##
+
+if [ "$#" -eq 0 ]
+then
+	echo "Yo bro enter something" 1>&2
+elif [ "$#" -eq 1 ] 
+then
+	numPrimes="$1"
+	counter=1
+	primeNum=3
+	upperbound=9999999
+	printf "2 "
+#########################################################
+##
+## Now if the number of inputs is 2 then do a check to see
+## check to see if the value of the 2nd number is 1, if
+## not then return text and exit the program. Then do the
+## same as above.
+##
+elif [ "$#" -eq 2 ] 
+then
+	if [ "$2" -ne 1 ]
+	then
+		echo "Please set second value to 1"
+		exit 0
+	fi
+	numPrimes="$1"
+	counter=1
+	primeNum=3
+	upperbound=9999999
+	echo -n "2 " 1>&2
+elif [ "$#" -eq 3 ] 
+then
+	#########################################################
+	##
+	## This is the same as above execpt at the end we check to
+	## see if the 3rd number is = to 0 if it is then output a
+	## 2. Besides that counter is now 0 and primeNum is now 
+	## what the user input.
+	##
+	if [ "$2" -ne 1 ]
+	then
+		echo "Please set second value to 1" 1>&2
+		exit 0
+	fi
+	upperbound=9999999
+	numPrimes="$1"
+	counter=0
+	primeNum="$3"
+	if [ ${primeNum} -eq 0 ]
+	then
+		echo -n "2 " 1>&2
+	fi
+
+elif [ "$#" -eq 4 ] 
+then
+	#########################################################
+	##
+	## The only thing to change here is to set the upperbound 
+	## to what the user wants.
+	##
+	if [ "$2" -ne 1 ]
+	then
+		echo -n "Please set second value to 1" 1>&2
+		exit 0
+	fi
+	numPrimes="$1"
+	counter=0
+	primeNum="$3"
+	upperbound="$4"
+	if [ ${primeNum} -eq 0 ]
+	then
+		echo -n "2 " 1>&2
+	fi
+#########################################################
+##
+## These next two conditions are checking to make sure 
+## that the number of input isn't greater than 4 and =
+## to 0.
+##
+
+elif [ "$#" -gt 4 ] 
+then
+	echo "That's more input than what is needed" 1>&2
+
+elif [ "$1" -eq 0 ]
+then
+	echo "Why even run this program then?" 1>&2
+fi
+#####################################################
+##
+## So start off with setting the number of primes to
+## the value the user has specified. Then set the
+## counter to 1 because this is keeping track of the
+## number of primes found. Set the number being tested
+## to 3 because 2 is prime and the program wont run
+## with a 0 number of primes so print a 2.
+##
+##
+## Now have a while loop that goes until the number
+## of primes has been met. At the start of this loop
+## set flag to 0 then set maxDiv to the sqrt of the
+## number being tested. Set the divisor to 2. Then
+## have another while loop that will go as many times
+## as the maxDiv.
+##
+
+starting=`date +%s%N`
+
+while [ ${counter} -lt ${numPrimes} ]; do
+	flag=0
+	maxDiv=$(echo "sqrt($primeNum)" | bc)
+	divisor=2
+	while [ ${divisor} -lt $((maxDiv+2)) ]; do
+	#################################################
+	##
+	## Then have a check variable check for a remainder
+	## and if there is one then set flag to 1 and break
+	## out of the loop. Increase divisor after every
+	## iteration.
+	##
+		check=$(echo "${primeNum} % ${divisor}" | bc)
+		if [ ${check} -eq 0 ]
+		then
+			flag=1
+			break			
+		fi
+		divisor=$((divisor+1))
+	done
+	#################################################
+	##
+	## Now do a check to see if the flag is 0, if so
+	## then that means its a prime, so print the value
+	## and increment counter by 1.
+	##
+	if [ $primeNum -gt $upperbound ]
+	then
+		 echo "" 1>&2
+		exit 0
+	fi
+
+	if [ $flag -eq 0 ]
+	then
+		echo -n "$primeNum " 1>&2
+		counter=$((counter+1))
+	fi
+	#################################################
+	##
+	## After every iteration the number being tested
+	## has been proven a prime or not, so increment 
+	## the number being tested by 1.
+	##
+	primeNum=$((primeNum+1))
+done
+echo "" 1>&2
+end=`date +%s%N`
+total=`bc <<< "scale=5; ${end} - ${starting}"` 
+total=`bc <<< "scale=4; ${total} / 1000000000"`
+echo "	$total"

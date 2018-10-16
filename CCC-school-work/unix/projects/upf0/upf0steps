@@ -1,0 +1,81 @@
+# Andrei Bratkovski
+# 9/19/2017
+
+# enter unix public directory
+
+cd /var/unix/fall2017/
+
+# 
+# copy project file over to my project library
+#
+cp numbers.tgz ~/src/unix/projects/upf0/
+cd abratkov
+cp TASK ~/src/unix/projects/upf0/
+cd ~/src/unix/projects/upf0/
+
+#
+# Unzip project files and get wget pipemath
+#
+
+gunzip numbers.tgz
+tar -xvf numbers.tar
+cd numbers
+make
+make install
+cd ..
+wget https://lab46.g7n.org/~wedge/projects/pipemath/pipemath-20170226-17.tar.gz
+
+#
+# unzip pipemath and install it
+#
+
+gunzip pipemath-20170226-17.tar.gz
+tar -xvf pipemath-20170226-17.tar
+cd pipemath
+make
+make install
+cd ..
+cat TASK
+
+
+#
+# create all task files and add math programs within them
+#
+
+touch task0.cli
+echo 'three | plus `seven` | minus `five`' >> task0.cli
+
+touch task1.cli
+echo 'five | plus `seven` | minus `three`' >> task1.cli
+
+touch task2.cli 
+echo 'five | multby $(zero | minus `four`) |  minus  `two` |  minus `zero`' >> task2.cli
+
+touch task3.cli
+echo 'three | multby `two` | minus $(zero | minus `five`)' >> task3.cli
+
+touch task4.cli
+echo 'zero | plus `four` | plus `four` | multby $(zero | minus `one`)' >> task4.cli
+
+touch task5.cli
+echo 'zero | minus `five` | minus `one` | minus `one` | negate' >> task5.cli
+
+touch task6.cli
+echo 'eight | multby `nine` | divideby `nine` | divideby `eight` | modulus `eight` |  negate' >> task6.cli
+
+touch task7.cli
+echo 'five | multby `four` | divideby `four` | multby `four` | divideby `four` | modulus `three` | negate' >> task7.cli
+
+#
+# make all cli programs executable, print/execute out all answers 
+#
+
+
+echo "Task 0 result is: " `./task0.cli`
+echo "Task 1 result is: " `./task1.cli`
+echo "Task 2 result is: " `./task2.cli`
+echo "Task 3 result is: " `./task3.cli`
+echo "Task 4 result is: " `./task4.cli`
+echo "Task 5 result is: " `./task5.cli`
+echo "Task 6 result is: " `./task6.cli`
+echo "Task 7 result is: " `./task7.cli`

@@ -1,0 +1,65 @@
+UNIX Knowledge Assessment (uka0)
+================================
+Once again, your skills are put to the test; you are given a data file
+that contains a scrambled ASCII art image that you must unravel and 
+re-assemble, using only non-interactive command-line tools (no text
+editors! no assistive scripts you didn't write!)
+
+The final image can be identified by a top and bottom row of the 
+letters of the alphabet, uppercase on the top, lowercase on the
+bottom. The progression is from left to right.
+
+The left and right-most columns contain a sequential count. The left
+column ranges from 0.0 to 4.5 top to bottom, whereas the right column
+ranges from 29 to 0 top to bottom.
+
+Use your experiences from the projects you've worked on, the various
+experimentation you've done in your own time, referencing the manual
+pages, and applying critical reasoning and common sense to solve this
+puzzle.
+
+Some tools you may want to investigate:
+        - cat(1)
+        - cut(1)
+        - paste(1)
+        - sort(1)
+        - tr(1)
+        - uudecode(1)
+        - uniq(1)
+
+Obviously, since it is a knowledge assessment, you cannot communicate
+with others. You may ask the instructor or available tutors for 
+clarification, but this exercise is meant for you to accomplish on
+your own, we will not be providing assistance, nor should you receive
+any from other individuals.
+
+You can verify your results by comparing md5sum hashes- I have stored
+the md5sum hash inside the MANIFEST file in the project public
+directory (just as I've done for your other recent projects).
+
+Keep track of your steps, and place them in a working non-interactive
+script by the name of "uka0steps", which you will submit along with
+your final ASCII art image, stored in a file called: "uka0.results"
+
+Your "uka0steps" file, while I would hope you make use of various
+shell facilities (like quotes, variables, wildcards), please do have
+a focus on having the file be readable with respect to comments and
+general file name references.
+
+To submit, do the following:
+
+    submit unix uka0 uka0.results uka0steps
+
+Some things I will be looking for:
+
+	*:uka0:submitted uka0.results file via submit tool
+	*:uka0:submitted uka0steps file via submit tool
+	*:uka0:uka0.results is correctly unscrambled and assembled
+	*:uka0:uka0.results md5sum matches project MANIFEST
+	*:uka0:uka0steps contains valid list of instructions
+	*:uka0:uka0steps uses shell features
+	*:uka0:uka0steps contains comments explaining process
+	*:uka0:uka0steps sets up local project directories
+	*:uka0:uka0steps copy data files with with absolute path
+	*:uka0:uka0steps all other paths are relative
+	*:uka0:uka0steps automates the project when executed

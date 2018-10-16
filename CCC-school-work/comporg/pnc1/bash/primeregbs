@@ -1,0 +1,46 @@
+#!/bin/bash
+
+#
+# Declare a variable in bash
+#
+lowerBound=2
+numPrimes=0
+compositeCounter=0
+maxNumPrimes=$1
+
+startTime=$(date +%s.%N)
+
+while [ ${numPrimes} -lt ${maxNumPrimes} ]; do
+	increment=2
+	sqrtLOW=$(echo "scale=2;sqrt($lowerBound)" | bc)
+	
+	while [ $(echo "$increment <= $sqrtLOW" | bc) == 1 ]; do
+		if [ $(($lowerBound % $increment)) -eq 0 ];
+		then
+			(( compositeCounter++ ))
+		fi
+		
+		if [ $compositeCounter -ge 2 ];
+		then
+			break
+		fi
+	(( increment++ ))
+	done
+
+	if [ $compositeCounter -lt 1 ];
+	then
+		printf "%d " $lowerBound >&2
+		(( numPrimes++ ))
+	fi
+
+	(( lowerBound++ ))
+	compositeCounter=0
+done
+
+endTime=$(date +%s.%N)
+echo
+runTime=$(echo "$endTime - $startTime" | bc )
+echo $runTime
+
+#printf "%f\n" $totalTime
+

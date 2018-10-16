@@ -1,0 +1,42 @@
+numbers - helper tools for UNIX upf0 project
+============================================
+numbers is a collection of simple C programs whose sole purpose is
+to display the numeric representation of their namesake to STDOUT.
+That is it.
+
+This project also helps to give user's experience in compiling and
+installing software so that they can make use of it in their own
+endeavors.
+
+How to compile
+==============
+Before you can use numbers, you first need to compile the source
+code. This has been simplified with the use of a Makefile. All you
+have to do (provided a capable C compiler is installed), is to type
+'make' at the command-line and the process should commence. You
+will see each tool be compiled, and hopefully in a successful
+fashion.
+
+How to install
+==============
+In order to make use of numbers for your endeavors, you will need
+to install them into some directory in your PATH. Your personal bin
+directory, located in the base of your home directory will do fine.
+
+To install numbers into your own bin directory, simply run:
+
+	make install
+
+at the prompt. Once done you should be all set. Try seeing if the
+tools are now available to you (try running 'three' or any of the
+other tools- if it doesn't come back saying "No such file or
+directory", then the install was successful).
+
+If not you may want to try logging out and logging back in.
+
+How to use
+==========
+The various "numbers", named for the single digit values they 
+display to STDOUT, are simple and straightforward. They require
+nor take any input, and only display their pertinent value to 
+STDOUT.

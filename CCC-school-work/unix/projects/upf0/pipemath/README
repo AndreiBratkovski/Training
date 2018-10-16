@@ -1,0 +1,49 @@
+pipemath - command-line pipeline math made easy (and fun!)
+==========================================================
+pipemath is a collection of C programs that performs an indicated
+math operation, taking input primarily from STDIN, and secondarily
+(if a binary operator) from a command-line supplied value. The
+operation is performed on the input(s), with the result being
+displayed to STDOUT.
+
+This project also helps to give user's experience in compiling and
+installing software so that they can make use of it in their own
+endeavors.
+
+How to compile
+==============
+Before you can use pipemath, you first need to compile the source
+code. This has been simplified with the use of a Makefile. All you
+have to do (provided a capable C compiler is installed), is to type
+'make' at the command-line and the process should commence. You
+will see each tool be compiled, and hopefully in a successful
+fashion.
+
+How to install
+==============
+In order to make use of pipemath for your endeavors, you will need
+to install them into some directory in your PATH. Your personal bin
+directory, located in the base of your home directory will do fine.
+
+To install pipemath into your own bin directory, simply run:
+
+	make install
+
+at the prompt. Once done you should be all set. Try seeing if the
+tools are now available to you (try running 'plus' or any of the
+other tools- if it doesn't come back saying "No such file or
+directory", then the install was successful).
+
+If not you may want to try logging out and logging back in.
+
+How to use
+==========
+The various pipemath tools, named for the mathematical operation
+they perform, are either a binary or unary input tool. For the
+binary input, the primary input comes from STDIN, and the 
+secondary input comes from a command-line supplied value.
+
+For the unary input tools, they only take input via STDIN.
+
+Once all required inputs have been provided, the indicated math
+operation is performed with the result being displayed to STDOUT.

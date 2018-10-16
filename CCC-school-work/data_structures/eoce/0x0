@@ -1,0 +1,28 @@
+Andrei Bratkovski
+11/15/17
+0x0 - Universal Implications
+
+	If I had to center a data structure around the universe, it would be some form of an ever expanding tree.
+I believe this is a great question because abstract data types are essentially us as humans trying to form a
+structure in our own way ( through code or other means ) in order to organize the natural way that our 
+universe works.  We then relate those structures to common day occurences in order to explain them.  Example would
+be to say that a stack of plates is a stack, a tree has leaves, those sort of things.  I could go into how a universe
+is one node pointing at itself, creating a cyclic universe, but that is more along the lines of Hindu/cyclic explanations
+which would be outside of the realm of how I would like to explain my universal data structure.
+
+	Even though I could go into detail about specific types of trees, I believe that a universe explanation in my reckoning
+would not require that I try to overcomplicate its structure.  If we go by the theory that the universe was created in a 
+big bang, then I would set the root node as the first atom, or first galaxy, whichever makes the most sense to the reader.  That
+one node ( atom, what have you ), would then gradually branch out in to several nodes.  I asked Matt what he would call this an he said a 
+starburst.  I would go with either that or a supernova, but essentially each node would have the amount of nodes that approach infinity.  Thus, the
+tree would have no limit and would be inifinitely expanding like our universe.
+
+	Whenever the universe experiences complications, supernovas, or destruction, if the nodes were stars, for examples, they would burst into several pieces.
+Thus, the nodes need to be broken into their smaller pieces.  If I were to demonstrate this numerically, If a node had a value of 10 ( 10 being the size of a star), and it had reached its maximum age, it would burst.  I would have this node separate into thousands of smaller sized nodes, all being connected to the same
+parent as the star node it had exploded from.  This is because even though a star exploding causes a change in the universe, it would essentially be in the
+same area as the explosion, and made up of the same matter as the star, just in smaller quantities.
+
+Smaller nodes could also combine and create larger nodes ( the forming of a star or larger celestial body ).  This would createa  node which is the sum of
+all parts.  this new node would then point to all of its smaller parts children.
+
+In a way, having a new, large celestial body ( the node a size of 10 ) pointing to all the smaller parts children, is like having a galaxy or solar system.  If our sun was a node the size of 10, then all of its children would be the planets in the solar system.  These are connections which would hold the solarsystem together.

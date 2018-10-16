@@ -1,0 +1,35 @@
+# pbx1steps - Andrei Bratkovski
+
+
+cd /
+cd var/public/fall2017/UNIX/pbx0
+cp -R abratkov ~/src/unix/projects/pbx1
+file README
+cat README
+file pbx1.html
+mv pbx1.html pbx1.xz
+xz -d pbx1.xz
+
+ar -x pbx1
+cat datafile | head -13 > bottom
+cat bottom | cut -d "X" -f1
+tac bottom | cut -d "X" -f1 > topRight
+tac bottom | cut -d "X" -f2 > topLeft
+cat topRight
+cat topLeft
+wc -L topLeft
+wc -L topRight
+paste -d"W " topLeft topRight > TopW
+cat datafile | tail -13 > Bottom
+tac Bottom | cut -d "X" -f1 > bottomRight
+tac Bottom | cut -d X -f2 > bottomLeft
+paste -d"W " bottomLeft bottomRight > BottomW
+cat Top Bottom
+cat TopW | tr -d "W" > Top
+cat BottomW | tr -d "W" > Bottom
+
+cat Top Bottom > pbx1.results
+
+# I have solved the giant swirl puzzle box 1! :D
+# Lots of learning using the cut and paste commands
+# Andrei Bratkovski 9/5/17

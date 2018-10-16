@@ -1,0 +1,118 @@
+#!/bin/bash
+#########################################
+#    DCFX Output Validator              #
+#    CREATED BY: Dan Schmitt            #
+#########################################
+
+# Color Palette
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+NOCOLOR='\033[0m'
+
+######################################################################
+##
+## Make TMP directory
+##
+mkdir -p tmp/
+
+# Autodetect dcfX version
+project="$(basename `pwd`)"
+
+# Prompt for stride/control
+DATAFILE="/var/public/fall2016/discrete/${project}/data/.check"
+if [ "${project}"    = "dcf0" ]; then
+    stride=
+    control=
+elif [ "${project}"  = "dcf1" ]; then
+    stride=
+    control=
+elif [ "${project}"  = "dcf2" ]; then
+    stride=
+    control=
+else
+	project=
+    echo "ERROR detecting dcfX project version!"
+
+    # Prompt for DCFX Version
+    echo -n "ENTER dcfX VERSION: "
+    read version
+    if [[ $version -gt 0 ]]; then
+        echo -n "ENTER TEST STRIDE LENGTH: "
+        read stride
+        if [[ $version -gt 1 ]]; then
+            echo -n "ENTER TEST CONTROL VALUE: "
+            read control
+        fi
+    fi
+fi
+
+FILES=data/*
+for file in $FILES
+do    
+    # Disregard .rle extensions
+    if ! [[ ${file} =~ \.rle$ ]]
+    then
+        ##############################################################
+        ##
+        ## Identify file being tested
+        ##
+		dfile=$(echo "${file}"    | cut -d'/' -f2)
+        printf "%-25s: " "${dfile}"
+
+        ##############################################################
+        ##
+        ## Copy data file into tmp directory
+        ##
+        /bin/cp -f data/${dfile} tmp/${dfile}
+
+        ##############################################################
+        ##
+        ## Store original hash
+        ##
+        original=`md5sum tmp/${dfile}`
+
+        ##############################################################
+        ##
+        ## Set the stride
+        ##
+		if [ ! -z "${project}" ]; then
+			stride=$(cat  ${DATAFILE} | grep "${dfile}:" | cut -d':' -f2)
+			control=$(cat ${DATAFILE} | grep "${dfile}:" | cut -d':' -f3)
+		fi
+
+        ##############################################################
+        ##
+        ## Encode file
+        ##
+        ./encode tmp/${dfile} ${stride} ${control} >  /dev/null
+
+        ##############################################################
+        ##
+        ## Decode file
+        ##
+        ./decode tmp/${dfile}.rle                  >  /dev/null
+        
+        ##############################################################
+        ##
+        ## Store new hash
+        ##
+        new=`md5sum tmp/${dfile}`
+
+        ##############################################################
+        ##
+        ## Display status
+        ##
+        if [[ $original == $new ]]
+        then
+            printf "${GREEN}OK${NOCOLOR}\n"
+        else    
+            printf "${RED}FAIL${NOCOLOR}\n"
+        fi
+    fi
+done
+
+######################################################################
+##
+## Remove TMP directory
+##
+rm -rf ./tmp/

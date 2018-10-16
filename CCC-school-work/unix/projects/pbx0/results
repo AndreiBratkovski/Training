@@ -1,0 +1,29 @@
+1   -------------------------------------------------------------------------
+2   Congratulations! You unravelled the puzzle box!
+3  
+4   To finish, you must perform these two additional steps, which take the
+5   form of command-lines. Please be sure to type them exactly as written!
+6  
+7   In order to proceed, you must have named this unscrambled file "results",
+8   after which you can do the following two steps (NOTE you must do BOTH of
+9   these steps):
+10  
+11  
+12  -------------------------------------------------------------------------
+13  Action 1: Submit your files using the "submit" tool. 
+14  --------  Just run the following to perform that action:
+15  
+16    $ submit unix pbx0 results pbx0steps
+17  
+18  NOTE: This assumes your "results" and "pbx0steps" files are in the
+19        current directory as you run the command.
+20  
+21  -------------------------------------------------------------------------
+22  Action 2: Email this file's contents to your instructor as well as
+23  --------  yourself. To do that, run the following at the lab46 prompt:
+24  
+25    $ cat results | mail -s "[UNIX: puzzlebox]" wedge ${USER}@offbyone.lan
+26  
+27  NOTE: If successful, you should receive a copy of this e-mail.
+28  -------------------------------------------------------------------------
+29  

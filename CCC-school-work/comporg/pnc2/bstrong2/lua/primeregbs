@@ -1,0 +1,83 @@
+#!/usr/bin/lua5.3
+
+---------------------------------------------------------
+--
+-- Aight so the first thing is to check to see how many
+-- arguments the user ran the program is, if its 0 then
+-- provide an error and exit, if they put a 0 for the
+-- number provide an error and exit, if the user provided
+-- too many arguments the provide an error and exit the
+-- program.
+--
+
+if #arg == 0 then
+	io.stderr:write("Invalid arguments!\n")
+	os.exit()
+elseif tonumber(arg[1]) == 0 then
+	io.stderr:write("Do you want to display primes?\n")
+	os.exit()
+elseif #arg > 1 then
+	io.stderr:write("Too many arguments\n")
+	os.exit()
+end
+---------------------------------------------------------
+--
+-- Next since all of the tests have been passed it's
+-- time to assign variables. So set max = to the number
+-- that the user has entered. Set maxFound = to 0, set
+-- lowerbound = to 2 then start the calculation clock.
+--
+max = tonumber(arg[1])
+maxFound = 0
+lowerbound = 2
+start = os.clock()
+---------------------------------------------------------
+--
+-- Next it's time for the while loop, the statement is 
+-- to keep going until the amount of primes that the
+-- user has specified has been found. Inside the loop
+-- reset the flag back to 0, reset divisor to 2 then
+-- do the sqrt of lowerbound then do the while loop.
+--
+while maxFound < max do
+	flag = 0
+	divisor = 2
+	square = math.sqrt(lowerbound)
+	-----------------------------------------------------
+	--
+	-- So this loop keeps going until the divisor ='s
+	-- the number of square. Inside the loop there is
+	-- an if statement checking to see if there is a
+	-- reamainder when dividing if the reamainder ='s 0
+	-- then set flag to 1 and break out of the loop
+	-- (increment divisor after every loop)
+	--
+	while divisor <= square do
+		if lowerbound % divisor == 0 then
+			flag = 1
+			break
+		end
+		divisor = divisor + 1
+	end
+	-----------------------------------------------------
+	--
+	-- An if to check if the flag was ever triggered, if
+	-- not then print out the number and increment 
+	-- maxFound. (then back to the main loop, increment
+	-- the lowerbound).
+	--
+	if flag == 0 then
+		io.stderr:write(lowerbound, " ")
+		maxFound = maxFound + 1
+	end
+	lowerbound = lowerbound + 1
+end
+---------------------------------------------------------
+--
+-- Now set a variable to the total time that the program
+-- ran for, then print out a new line, then print off 
+-- the time.
+--
+total = os.clock() - start
+io.stderr:write("\n")
+print("	",string.format("%.4f",total))

@@ -1,0 +1,305 @@
+#!/bin/bash
+##
+## pncrun         - script to perform runtime and memory benchmarks
+##
+## usage:
+##
+##    pncrun [OPTION]...
+##
+## where OPTION is 0 or more (space-separated arguments) of:
+##
+##    csv         - reformat in CSV (comma-separated value) format
+##    nomemory    - do not perform memory utilization check
+##    notime      - do not perform runtime check
+##    omitreg     - do not include primereg
+##    qty=#       - run only for given quantity
+##    timeout=#s  - set runtime cap at # seconds (can be decimal)
+##
+######################################################################
+
+######################################################################
+##
+## General pncrun variables
+##
+WIDTH=$(tput cols)
+CSVOUT=$(echo  "${*}" | grep  -qo 'csv'     && echo "true"  || echo "false")
+MEMCHK=$(echo  "${*}" | grep  -qo 'nomem'   && echo "true"  || echo "false")
+TIMECHK=$(echo "${*}" | grep  -qo 'notime'  && echo "true"  || echo "false")
+OMITREG=$(echo "${*}" | grep  -qo 'omitreg' && echo "true"  || echo "false")
+QTY=$(echo     "${*}" | grep  -o  'qty=[1-9][0-9]*'          | cut -d'=' -f2)
+TIMEOUT=$(echo "${*}" | egrep -o  'timeout=[0-9]+(.[0-9]+)?' | cut -d'=' -f2)
+QTYWIDTH=7
+COLWIDTH=6
+
+######################################################################
+##
+## Prime number-related variables
+##
+LANG_LIST="$(find . -type d | cut -d'/' -f2 | grep -v '^\.$' | sort)"
+ALGO_LIST="reg rol soe"
+MEMORY_LIST="_ l r A t"
+OPT_LIST="_ b m o s a bm bo bs ba mo ms ma os oa bmo "
+OPT_LIST="${OPT_LIST} bms bma bos boa mos moa bmos bmoa"
+CONFLICT_LIST="sa"
+VARIANT_LIST=
+
+######################################################################
+##
+## Configure runtime settings (starting quantity)
+##
+if [ -z "${QTY}" ]; then
+	QTY=128
+fi
+
+######################################################################
+##
+## Configure runtime settings (timeout)
+##
+if [ -z "${TIMEOUT}" ]; then
+	TIMEOUT=1.36
+fi
+
+######################################################################
+##
+## Generate VARIANT_LIST based on available binaries; starting
+## with language implementation.
+##
+VARIANTS=
+for language in ${LANG_LIST}; do
+
+    ##################################################################
+    ##
+    ## If language directory is non-existant, skip
+    ##
+    if [ ! -x "${language}" ]; then
+        continue
+    fi
+
+    ##################################################################
+    ##
+    ## Iterate through identified prime algorithms
+    ##
+    for algo in ${ALGO_LIST}; do
+
+        ##############################################################
+        ##
+        ## Iterate through identified storage approaches
+        ##
+        for storage in ${MEMORY_LIST}; do
+
+            ##########################################################
+            ##
+            ## Check for baseline storage (none)
+            ##
+            if [ "${storage}" = "_" ]; then
+                storage=
+            fi
+
+            ##########################################################
+            ##
+            ## Iterate through identified optimizations
+            ##
+            for optim in ${OPT_LIST}; do
+
+                ######################################################
+                ##
+                ## Check for baseline optimizations (none)
+                ##
+                if [ "${optim}" = "_" ]; then
+                    optim=
+                fi
+
+                ######################################################
+                ##
+                ## Check for actual executable to run
+                ##
+                name="${algo}${storage}${optim}"
+                if [ -x "${language}/prime${name}" ]; then
+                    VARIANTS="${VARIANTS} ${language}/${algo}:${name}"
+                fi
+            done
+        done
+    done
+done
+VARIANT_LIST=$(echo "${VARIANTS}" | sed 's/^ //g')
+
+######################################################################
+##
+## Display top information header containing available variants
+##
+varcount=$(echo "${VARIANT_LIST}" | wc -w)
+COLWIDTH=$(((WIDTH-QTYWIDTH)/varcount))
+let varcount=varcount+1 # include qty column
+let even=varcount%2     # check for even or odd
+
+title="pncrun:[reg]"
+if [ "${varcount}" -eq 2 ]; then
+	hrule="======"
+	title=
+elif [ "${even}" -eq 1 ]; then
+	hrule=
+	halfspan=$((varcount/4))
+	for ((iter=0; iter < halfspan; iter++)); do
+		hrule="${hrule}======"
+	done
+	hrule="${hrule}==="
+else
+	hrule=
+	halfspan=$((varcount/4))
+	for ((iter=0; iter < halfspan; iter++)); do
+		hrule="${hrule}======"
+	done
+fi
+
+if [ "${CSVOUT}" = "false" ]; then
+	echo "=${hrule}${title}${hrule}"
+	printf "%*s" "${QTYWIDTH}" "qty"
+else
+	printf "qty"
+fi
+
+width=${QTYWIDTH}
+for variant in ${VARIANT_LIST}; do
+
+    ##################################################################
+    ##
+    ## Parse string for language and variant info
+    ##
+	lang=$(echo ${variant} | cut -d'/' -f1)
+	algo=$(echo ${variant} | cut -d'/' -f2 | cut -d':' -f1)
+	name=$(echo ${variant} | cut -d'/' -f2 | cut -d':' -f2 | sed "s/^${algo}//g")
+
+    ##################################################################
+    ##
+    ## Run program if it exists
+    ##
+	if [ "${CSVOUT}" = "false" ]; then
+		if [ -z "${name}" ]; then
+			name="base"
+		fi
+		printf "%*s" "${COLWIDTH}" "${name}"
+	else
+		printf ",prime${algo}${name}/${lang}"
+	fi
+       # ${variant}/prime${variant} ${qty} > /dev/null
+	let width=width+COLWIDTH
+
+#	if [ "${width}" -ge "${WIDTH}" ]; then
+#		echo "WIDTH LIMIT REACHED"
+#		exit 1
+#	fi
+done
+echo
+
+if [ "${CSVOUT}" = "false" ]; then
+
+	printf "%*s" "${QTYWIDTH}" " "
+	width=${QTYWIDTH}
+	for variant in ${VARIANT_LIST}; do
+
+		##################################################################
+		##
+		## Parse string for language and variant info
+		##
+		lang=$(echo ${variant} | cut -d'/' -f1)
+		algo=$(echo ${variant} | cut -d'/' -f2 | cut -d':' -f1)
+		name=$(echo ${variant} | cut -d'/' -f2 | cut -d':' -f2 | sed "s/^${algo}//g")
+		if [ -z "${name}" ]; then
+			name="base"
+		fi
+
+		##################################################################
+		##
+		## Run program if it exists
+		##
+		printf "%*s" "${COLWIDTH}" "${lang}"
+		   # ${variant}/prime${variant} ${qty} > /dev/null
+		let width=width+COLWIDTH
+
+#		if [ "${width}" -ge "${WIDTH}" ]; then
+#			echo "WIDTH LIMIT REACHED"
+#			exit 1
+#		fi
+	done
+	echo
+fi
+
+######################################################################
+##
+## Complete the top banner display
+##
+slot=0
+declare -a primeslot
+for variant in qty ${VARIANT_LIST}; do
+	hline="${hline}======"
+	primeslot[${slot}]=0
+	let slot=slot+1
+done
+hline="=${hline}"
+if [ "${CSVOUT}" = "false" ]; then
+	echo "${hline}"
+fi
+
+QUIT="false"
+varcount=$(echo "${VARIANT_LIST}" | wc -w)
+
+while [ "${QUIT}" = "false" ]; do
+
+	if [ "${CSVOUT}" = "false" ]; then
+		printf "%7s" "${QTY}"
+	else
+		printf "${QTY}"
+	fi
+
+	tally=0
+	slot=0
+	for variant in ${VARIANT_LIST}; do
+
+		##################################################################
+		##
+		## Parse string for language and variant info
+		##
+		lang=$(echo ${variant} | cut -d'/' -f1)
+		algo=$(echo ${variant} | cut -d'/' -f2 | cut -d':' -f1)
+		name=$(echo ${variant} | cut -d'/' -f2 | cut -d':' -f2)
+
+		if [ "${primeslot[${slot}]}" -eq 0 ]; then
+			runtime="$(timeout ${TIMEOUT} ${lang}/prime${name} ${QTY} 2> /dev/null)"
+			if [ -z "${runtime}" ]; then
+				if [ "${CSVOUT}" = "false" ]; then
+					runtime=" -----"
+				else
+					runtime="NaN"
+				fi
+				let tally=tally+1
+				primeslot[${slot}]=1
+			else
+				runtime=$(printf "%.3lf" "${runtime}")
+			fi
+		else
+			if [ "${CSVOUT}" = "false" ]; then
+				runtime=" -----"
+			else
+				runtime="NaN"
+			fi
+			let tally=tally+1
+		fi
+
+		if [ "${CSVOUT}" = "false" ]; then
+			printf "%*s" "${COLWIDTH}" "${runtime}"
+		else
+			printf ",${runtime}"
+		fi
+		let slot=slot+1
+	done
+	echo
+	let QTY=QTY*2
+	if [ "${tally}" -eq "${varcount}" ]; then
+		QUIT="true"
+	fi
+done
+
+if [ "${CSVOUT}" = "false" ]; then
+	echo "${hline}"
+fi
+exit 0

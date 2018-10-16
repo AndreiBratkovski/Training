@@ -1,0 +1,10 @@
+20  
+7   In order to proceed, you must have named this unscrambled file "results",
+11  
+10  
+15  
+16    $ submit unix pbx0 results pbx0steps
+14  --------  Just run the following to perform that action:
+27  NOTE: If successful, you should receive a copy of this e-mail.
+25    $ cat results | mail -s "[UNIX: puzzlebox]" wedge ${USER}@offbyone.lan
+19        current directory as you run the command.

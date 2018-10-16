@@ -1,0 +1,9 @@
+#!/bin/bash
+##
+## Wrapper for nodejs script
+##
+##python ${0}.py ${*}
+export CLASSPATH=${HOME}/src/comporg/pnc1/java
+java -XX:MaxHeapSize=512M -XX:InitialHeapSize=256M -XX:CompressedClassSpaceSize=128M -XX:MaxMetaspaceSize=128m -XX:MetaspaceSize=64m primeregbs ${*}
+
+exit 0

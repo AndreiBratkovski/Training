@@ -1,0 +1,77 @@
+#
+# 0x1 - Second Sight - Andrei Bratkovski unix eoce
+#
+
+#
+# table of contents
+#
+dd if=memdump.ram of=toc bs=1 skip=118483 count=88
+cat toc
+
+# part1
+# calculate base 10 of hex offset for dd
+#
+printf "%d\n", 0x13ca0
+
+#
+# calculate base 10 of octal length for dd
+#
+echo "obase=10; ibase=8; 110350" | bc
+
+#
+# repeat for part2 and 3
+#
+printf "%d\n", 0x1800
+echo "obase=10; ibase=8; 204240" | bc
+
+printf "%d\n", 0x1e188
+echo "obase=10; ibase=8; 104440" | bc
+
+xxd memdump.ram | grep "0x13ca0"
+
+#
+# dd part 1, 2, and 3
+#
+
+#
+# Part 1
+#
+dd if=memdump.ram of=part1 bs=1 skip=81056 count=37096
+
+#
+# Part 2
+#
+dd if=memdump.ram of=part2 bs=1 skip=6144 count=67744
+
+#
+# Part 3
+#
+dd if=memdump.ram of=part3 bs=1 skip=123272 count=35104
+
+#
+# rename part1 to part1.xz and decompress it
+#
+mv part1 part1.xz
+unxz part1.xz
+
+#
+# decode part2
+#
+mv part2 part2.uu
+uudecode part2.uu
+
+#
+# combine 3 files and
+# convert to pnm/png files
+#
+cat part1 part2 part3 > meme
+rletopnm meme > meme.pnm
+#
+# rescale size to spec
+#
+pnmscale -xysize 418 418 meme.pnm > memed.pnm
+
+#
+# result changed to png, named to spec
+#
+pnmtopng memed.pnm > meme0531.png

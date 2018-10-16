@@ -1,0 +1,366 @@
+Andrei Bratkovski
+11/15/17
+Ox2- Data Structures EoCE - FreeCell Solitaire
+Documentation Approach
+
+FreeCell requires one deck of 52 cards which would be shuffled and dealt
+out into 8 stacks. 4 stacks would contain 7 cards and 4 stacks would contain 6 cards.
+
+That would be (7 * 4) + (6 * 4) == 28 + 24 = 52 cards.
+
+With my documentation I would like to approach this with the already built in list/stack
+functions that we created in previous projects.
+
+/////////////////////////////////////
+//		Setting up the game		   //
+/////////////////////////////////////
+\
+First I declare a decks of cards as an array of strings ( like in my yol0 example ):
+
+char *cardList[] = {
+	"AC", "2C", "3C", "4C", "5C", "6C", "7C", "8C", "9C", "10C", "JC", "QC",
+	    "KC",
+	"AD", "2D", "3D", "4D", "5D", "6D", "7D", "8D", "9D", "10D", "JD", "QD",
+	    "KD",
+	"AH", "2H", "3H", "4H", "5H", "6H", "7H", "8H", "9H", "10H", "JH", "QH",
+	    "KH",
+	"AS", "2S", "3S", "4S", "5S", "6S", "7S", "8S", "9S", "10S", "JS", "QS",
+	    "KS"
+};
+
+char *blackCards[] = {
+	"AC", "2C", "3C", "4C", "5C", "6C", "7C", "8C", "9C", "10C", "JC", "QC",
+	    "KC",
+	"AS", "2S", "3S", "4S", "5S", "6S", "7S", "8S", "9S", "10S", "JS", "QS",
+	    "KS"
+};
+
+char *redCards[] = { "AD", "2D", "3D", "4D", "5D", "6D", "7D", "8D", "9D", "10D", "JD", "QD",
+	    	"KD",
+		 "AH", "2H", "3H", "4H", "5H", "6H", "7H", "8H", "9H", "10H", "JH", "QH",
+	    	"KH" };
+
+The first deck would be my standard deck of cards, which gets shuffled before the game starts.
+I would then declare two more arrays for red and black cards to check against suits later on for when
+the user decides to grab a card and place it in a new stack.
+
+////////////////////////////
+// 		STACKS OF CARDS   //
+////////////////////////////
+
+Freecell revolves all around Stacks.  The top left 4 cells will each be a stack of size 1, just to keep things
+consistent. The declaration would be as follows:
+
+	Stack *freeCell_1, *freeCell_2, *freeCell_3, *freeCell_4;
+	mkstack(&freeCell_1, 1);
+	mkstack(&freeCell_2, 1);
+	mkstack(&freeCell_3, 1);
+	mkstack(&freeCell_4, 1);
+
+This Way, a user can place whatever node ( card in this case ) that they are holding on to and push it onto
+a free cell, with only 4 available options.
+
+For the top right foundation stacks, we will declare 4 more stacks ( 1 for each suit) and make them the size of
+each suit length (13 cards per suit):
+
+	Stack *clubStack, *spadeStack, *diamondStack, *heartStack.
+	mkstack(&clubStack, 13);	
+	mkstack(&spadeStack, 13);
+	mkstack(&diamondStack, 13);
+	mkstack(&heartStack, 13);
+
+Lastly, I would set up 8 more stacks for each cascade. Out of personal preference I would set up
+each stack to be unbounded length since my implementation would not be concerned so much with that
+when a user is fiddling with the cascade stacks:
+
+	Stack *cascade1, *cascade2, *cascade3, *cascade4, *cascade5, *cascade6, *casecade7, *cascade8;
+	mkstack(&cascade1, 0); 
+	mkstack(&cascade2, 0); 
+	mkstack(&cascade3, 0); 
+	mkstack(&cascade4, 0); 
+	mkstack(&cascade5, 0); 
+	mkstack(&cascade6, 0); 
+	mkstack(&cascade7, 0); 
+	mkstack(&cascade8, 0);
+
+Yes! We have now declared all of the stacks that we will be using in this implementation.
+
+//////////////////////////////
+//	SHUFFLE THE DECK		//
+//////////////////////////////
+
+One of the central parts to starting the game is to shuffle the deck randomly and deal out the cards.
+In order to shuffle the deck, we will take our cardList and write a function that shuffles it:
+
+#include <stdio.h>
+#include <stdlib.h>
+#include <time.h>
+
+char *cardList[] = { "AD", "2D", "3D", "4D", "5D" };
+
+void shuffle();
+void swap( char **, char ** );
+
+int main() {
+
+  int n = sizeof(cardList)/sizeof(cardList[0]);
+  shuffle();
+  
+  return 0;
+}
+
+//
+// Swap two cards
+//
+void swap( char **cardA, char **cardB)
+{
+  char  *tmp = *cardA;
+  *cardA = *cardB;
+  *cardB = tmp;
+}
+
+//
+// Swapping cards at a random index up until last element of the card list
+//
+void shuffle()
+{
+	int size = 5;
+    int increment;
+    for (increment = size-1; increment > 0 ; increment--)
+    {
+        int swapIndex = rand() % (increment+1);
+        swap(&*(cardList+increment), &*(cardList+swapIndex));
+    }
+}
+
+////////////////////////////////////
+//	DEAL THE CARDS				  //
+////////////////////////////////////
+
+The next step in the game is to deal out the cards.  After shuffling
+the entire deck, each card would be pushed to the 8 cascades.
+The first 4 cascades would start with 7 cards and the last 4 cascades would
+start with 6 cards.
+
+//
+// From a shuffled deck deal the deck
+//
+Implementation pseudocode:
+
+int increment;
+int index = 0;
+Node *card = NULL;
+
+//
+// For the first 4 cascades, push 7 cards onto the stack
+//
+for ( increment = 0; increment < 7; increment++)
+{
+	*card = cardList[index];
+	push(&cascade1, card);  // cascades 1-4
+	index++;
+}
+
+//
+// for the last 4 cascades, push 6 cards onto the stack
+//
+for ( increment = 0; increment < 6; increment++)
+{
+	*card = cardList[index];
+	push(&cascade4, card);  // cascades 5-8
+	index++;
+}
+
+Note: Not rewriting for each cascade, but you get the point :D
+
+////////////////////////////////////////
+// 	PLAYING THE GAME 				  //
+////////////////////////////////////////
+
+In order to play the game, the user needs to pop a card off of
+whichever stack they would like from the cascades.  Since this is
+freecell, each card is viewable.  In order to display per turn we would have
+a display function to display each cascade's card stack.
+
+In this implementation we treat strings as nodes which can hold string content.
+
+Implementation:
+
+*topCard = NULL;
+Stack *tmpStack;
+mkstack(&tmpStack, 0);
+
+//
+// Display the card in each cascade so that the user
+// knows what is in the deck
+//
+void display()
+{
+	while ( (*cascade1)->top != NULL ) // for cascades 1-8
+	{
+		pop(&cascade1, &topCard);
+		fprintf(stdout, "%s ", topCard->contents); // card contents
+		push(&tmpStack, topCard);
+	}	
+		while ( (*cascade1)->top != NULL ) // for cascades 1-8
+	{
+		pop(&cascade1, &topCard);
+		fprintf(stdout, "%s ", topCard->contents); // card contents
+		push(&tmpStack, topCard);
+	}	
+
+}
+
+Each card is popped and printed in order, then placed back into the cascade stack. This
+leaves the card stacks into the order that they were originally, but the contents are all
+printed out.
+
+/////////////////////////////////
+// 		Pulling a card		   //
+/////////////////////////////////
+
+In FreeCell, and solitaire in general, the user can only move one card at a time.
+This would occur by simply popping the card into the *hand temporary holder "card node".
+
+Node *hand;
+pop(&chosenCascade, &hand);
+
+////////////////////////////////
+//		Plays				  //
+////////////////////////////////
+
+In order to play a card, the user can decide upon whether they add to the foundation stack,
+or the cascade stack
+
+In the cascade stack, the user can only place a card that is one number less than the card at the
+top of the stack.  We would need to place a restriction on the user.
+
+Pseudo:
+If cascade->top is a different color and 1 rank higher:
+	add to stack
+else
+	print "Not allowed buddy!"
+
+In an actual implementation adding to a cascade:
+
+addToCascade( Stack **cascade, Node *card )
+{
+	//
+	// Initialize triggers for black/red card in hand and top of cascade
+	//
+	int handBlack = 0;
+	int handRed = 0;
+
+	int cascadeBlack = 0;
+	int cascadeRed = 0;
+
+	int handSuitValue;
+	int topSuitValue;
+
+	int increment;
+	//
+	// Iterate through lists of red and black cards to check
+	// if card is black or red, and compare the triggers against
+	// eachother to see if the cards are the same color
+	//
+	for ( increment = 0; increment < 13; increment++ )
+	{
+		if ( strcmp( card->contents, blackCards[increment] ) == 0 )
+		{
+			handBlack = 1; // indicates that the card is black
+			handSuitValue = increment;
+			break;
+		}
+	}
+	for ( increment = 0; increment < 13; increment++ )
+	{
+		if ( strcmp( card->contents, redCards[increment] ) == 0 )
+		{
+			handRed = 1; // indicates that the card is black
+			handSuitValue = increment;
+			break;
+		}
+	}
+	for ( increment = 0; increment < 13; increment++ )
+	{
+		if ( strcmp( (*cascade)->top->contents, blackCards[increment] ) == 0 )
+		{
+			cascadeBlack = 1; // indicates that the card is black
+			topSuitValue = increment;
+			break;
+		}
+	}
+	for ( increment = 0; increment < 13; increment++ )
+	{
+		if ( strcmp( (*cascade)->top->contents, redCards[increment] ) == 0 )
+		{
+			cascadeRed = 1; // indicates that the card is black
+			topSuitValue = increment;
+			break;
+		}
+	}
+
+	if ( (cascadeRed > 0 && handRed > 0 ) || ( cascadeBlack > 0 && handBlack > 0 ) )
+		fprintf(stdout, "Can't play there\n");
+	//
+	// If cards are not the same color, we check if the suit of cascade->top is 1 higher than
+	// the suit of the card in hand
+	//
+	else
+		{
+			if ( topSuitValue == ( handSuitValue+1) )
+			{
+				push(&cascade, card);
+			}
+			else
+				fprintf(stdout, "Can't play there")
+		}			
+}
+
+//////////////////////////////
+Pushing/popping from Free Cell
+//////////////////////////////
+
+Adding to the free cell would be as simple as pushing any card in hand onto the stack, and grabbing it
+would be as simple as popping, so that doesn't need any pseudocode. Since the freecell stacks
+are bound to size of 1, they are already restricted.
+
+//////////////////////////////////
+Pushing/popping to/from Foundation
+//////////////////////////////////
+
+This implementation is not complicated, but requires a bit of explanation.
+we would use a conditional to say 
+
+Iterate over red/black list depending on the hand card's color and check if the card
+on top of the foundation stack is exactly one index above in the same suit.
+
+Implementation:
+
+addToFoundation( Stack **foundation (clubStack, heartStack, what have you ), Node *card )
+{
+	for ( increment = 0; increment < 13; increment++ )
+	{
+		//
+		// Check each card in the List until we find the index
+		//
+		if ( strcmp( (*clubStack)->top->contents, cardList[increment] ) == 0 )
+		{
+			break;
+		}
+		//
+		// Check if the card is viable to be added to the foundation stack
+		//
+		if ( strcmp(card->contents, cardList[increment+1) ) 			
+			push(&clubStack, card)
+		else
+			fprintf(stdout, "Can't add that card to the foundation)
+	}
+}  
+
+//////////////////////////
+// Did the user win?	//
+//////////////////////////
+Now all of the necessary pieces are in place.  The only thing left to check is when the user wins. Each time after a card is
+added to the foundations succesfully, the program can scan through the foundation piles peeking at each top to see if it is
+the array begins with a "K", meaning it is the King, which is the top of the foundation.
