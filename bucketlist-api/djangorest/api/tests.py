@@ -71,6 +71,7 @@ class ViewTestCase(TestCase):
         """
         Test the api can update a given bucketlist.
         """
+        bucketlist = Bucketlist.objects.get()
         change_bucketlist = {'name': 'Something new'}
         response = self.client.put(
             api_reverse('details', kwargs={'pk': bucketlist.id}),
