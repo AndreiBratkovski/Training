@@ -64,7 +64,7 @@ class ViewTestCase(TestCase):
         """
         new_client = APIClient()
         response = new_client.get('/bucketlists/', kwargs={'pk': 3}, format="json")
-        self.assertEqual(response.status_code, status.HTTP_403_FORBIDDEN)
+        self.assertEqual(response.status_code, status.HTTP_401_UNAUTHORIZED)
 
     def test_api_can_get_a_bucketlist(self):
         """
