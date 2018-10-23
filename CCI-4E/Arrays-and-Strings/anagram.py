@@ -10,8 +10,8 @@ def anagram(str1, str2):
 
 
 class Test(unittest.TestCase):
-    true_test_data = [("listen", "silent"), ("hithere", "hithere"),
-                      ("", ""), ("None", "None")]
+    true_test_data = [("listen", "silent"), ("hithere", "hitheer"),
+                      ("", ""), ("None", "oNne")]
     false_test_data = [("hithere", "bro"), ("thi s", "shou ld fail"),
                        ("nogood", "")]
 
