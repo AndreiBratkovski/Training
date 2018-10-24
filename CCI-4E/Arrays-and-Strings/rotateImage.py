@@ -20,6 +20,9 @@ import unittest
 from collections import deque
 
 
+#
+# Extra space
+#
 def rotate_image(matrix):
     results = []
     m_length = len(matrix)
@@ -33,6 +36,31 @@ def rotate_image(matrix):
             inner.appendleft(item)
         results.append(list(inner))
     return results
+
+
+#
+# In place
+#
+def rotate_image_inplace(matrix, m_length):
+    for layer in range(0, (m_length // 2)):
+        first = layer
+        last = m_length - 1 - layer
+        for i in range(first, last):
+            offset = i - first
+            top = matrix[first][i] # save top
+            # left -> top
+            matrix[first][i] = matrix[last - offset][first]
+
+            # bottom -> left
+            matrix[last - offset][first] = matrix[last][last - offset]
+
+            # right -> bottom
+            matrix[last][last - offset] = matrix[i][last]
+
+            # top -> right
+            matrix[i][last] = top # right <- saved top
+
+    return matrix
 
 
 class Test(unittest.TestCase):
@@ -49,6 +77,11 @@ class Test(unittest.TestCase):
 
     def test_rotate_image(self):
         result = rotate_image(self.input_matrix)
+        self.assertEqual(result, self.output_matrix)
+
+    def test_rotate_image_inplace(self):
+        result = rotate_image_inplace(self.input_matrix,
+                                      len(self.input_matrix))
         self.assertEqual(result, self.output_matrix)
 
 
